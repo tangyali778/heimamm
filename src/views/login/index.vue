@@ -50,6 +50,8 @@
 </template>
 
 <script>
+//按需导入
+import { setToken } from "@/ultils/token";
 export default {
   name: "Login",
   data() {
@@ -58,8 +60,8 @@ export default {
       codeURL: process.env.VUE_APP_BASEURL + "/captcha?type=login",
       // 模型
       loginForm: {
-        phone: "13260562029", //手机号
-        password: "123456", //密码
+        phone: "18511111111", //手机号
+        password: "12345678", //密码
         code: "", //验证码
         isCheck: true //是否勾选了用户协议
       },
@@ -112,30 +114,66 @@ export default {
   methods: {
     //  点击验证码获取新的验证码,后面要跟一个随机数表示每次发送请求的url不一样,图片的src属性发送请求会有缓存
     getCaptcha() {
-      this.codeURL =  process.env.VUE_APP_BASEURL + "/captcha?type=login&" +Math.random() * 999;
+      this.codeURL =
+        process.env.VUE_APP_BASEURL +
+        "/captcha?type=login&" +
+        Math.random() * 999;
     },
     //  点击登录按钮的时候 还要最后对form表单做一次校验,保证都填入了内容并且是合法的内容
     loginClick() {
-      this.$refs.loginRef.validate(valid => {
-       // console.log(valid);这里的如果校验通过了就是true,
+      this.$refs.loginRef.validate(async valid => {
+        //console.log(valid);//这里的如果校验通过了就是true,
         //  校验没通过直接退出整个函数
         if (!valid) return;
 
-        //  如果校验成功就发生请求
-        this.$axios.post("/login", this.loginForm).then(res => {
-           console.log(res);
-          if (res.data.code==200) {
-            this.$message({
-            message: '登陆成功',
-            type: 'success'
-        });
-          }else{
-             this.$message.error(res.data.message);
-            //  登录失败的话就发送请求重新获得验证码
-            this.codeURL =  process.env.VUE_APP_BASEURL + "/captcha?type=login&" +Math.random() * 999;
-             
-          }
-        });
+        // 1.异步代码 如果校验成功就发生请求
+        
+        // this.$axios.post("/login", this.loginForm).then(res => {
+        //   console.log(res);
+        //   if (res.data.code == 200) {
+        //     this.$message({
+        //       message: "登陆成功",
+        //       type: "success"
+        //     });
+        //     // 登录成功之后要保存token
+        //     setToken(res.data.data.token);
+
+        //    // 跳转到layout页面
+        //    this.$router.push('/layout')
+        //   } else {
+        //     this.$message.error(res.data.message);
+        //     //  登录失败的话就发送请求重新获得验证码
+        //     this.codeURL =
+        //       process.env.VUE_APP_BASEURL +
+        //       "/captcha?type=login&" +
+        //       Math.random() * 999;
+        //   }
+        // });
+
+       // 2.看起来像同步实际是异步代码的发送请求,与上面的then获得结果都是一样的,用哪个都行
+         const res = await this.$axios.post("/login", this.loginForm);
+
+        if (res.data.code === 200) {
+          // 提示
+          this.$message({
+            message: "登录成功~",
+            type: "success",
+          });
+
+          //  登录成功之后要保存token
+          setToken(res.data.data.token)
+
+          // 跳转到后台管理页面
+          this.$router.push('/layout')
+        } else {
+
+          this.$message.error(res.data.message);
+
+          this.codeURL =
+            process.env.VUE_APP_BASEURL +
+            "/captcha?type=login&t=" +
+            (new Date() - 0);
+        }
       });
     }
   }
