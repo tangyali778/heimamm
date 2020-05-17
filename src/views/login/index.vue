@@ -25,8 +25,8 @@
               </el-col>
             </el-row>
           </el-form-item>
-          <el-form-item>
-             <el-checkbox></el-checkbox> 我已阅读并同意<el-link type="primary" href="http://www.baidu.com">用户协议</el-link>和<el-link type="primary" href="http://www.baidu.com">隐私条款</el-link>
+          <el-form-item prop="isCheck">
+             <el-checkbox v-model="loginForm.isCheck"></el-checkbox> 我已阅读并同意<el-link type="primary" href="http://www.baidu.com">用户协议</el-link>和<el-link type="primary" href="http://www.baidu.com">隐私条款</el-link>
           </el-form-item>
            <el-form-item>
              <el-button type="primary" style="width:100%">登录</el-button>
@@ -52,13 +52,27 @@ export default {
          phone:"",//手机号
          password:"",//密码
          code:"",//验证码
+         isCheck:false,//是否勾选了用户协议
       },
       // 效验规则
       rules:{
         phone: [
           // 是个数组里面可以写多个效验规则
-            { required: true, message: '请输入手机号', trigger: 'blur' },
-            { min: 11, max: 11, message: '手机号必须是11位', trigger: 'blur' }
+           // { required: true, message: '请输入手机号', trigger: 'blur' },
+            //{ min: 11, max: 11, message: '手机号必须是11位', trigger: 'blur' }
+            {validator: (rule,value,callback)=>{
+                   if (!value) {
+                     //这里的return不是让你返回这个callback是让你不要往下执行了,函数就此打断
+                     return callback(new Error("手机号不能为空"))
+                   }
+                   //手机号的正则表达式
+                   const reg = /^1[3456789][0-9]{9}$/;
+                   if (!reg.test(value)) {
+                       return callback(new Error("手机号不合法"));
+                   }
+
+                   callback();
+            }, trigger: 'blur' }
           ],
           password: [
             { required: true, message: '请输入密码', trigger: 'blur' },
@@ -68,6 +82,15 @@ export default {
             { required: true, message: '请输入验证码', trigger: 'blur' },
              { min: 4, max: 4, message: '长度必须是4位', trigger: 'blur' }
           ],
+          isCheck:[
+            {validator:(rule,value,callback)=>{
+                  if (!value) {
+                   //这里的return不是让你返回这个callback是让你不要往下执行了,函数就此打断
+                     return callback(new Error("必须勾选用户协议"))
+                  }
+                 callback();    
+            },trigger: 'change' }
+          ]
       }
     }
   },
