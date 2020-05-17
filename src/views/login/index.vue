@@ -8,17 +8,17 @@
         <span class="sub-title">用户登录</span>
       </div>
       <!-- form表单部分 -->
-      <el-form class="login-form">
-        <el-form-item>
-          <el-input placeholder="请输入手机号" prefix-icon="el-icon-user"></el-input>
+      <el-form class="login-form" :model="loginForm" :rules="rules">
+        <el-form-item prop="phone">
+          <el-input placeholder="请输入手机号" prefix-icon="el-icon-user" v-model="loginForm.phone"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-input placeholder="请输入密码" show-password prefix-icon="el-icon-lock"></el-input>
+        <el-form-item prop="password">
+          <el-input placeholder="请输入密码" show-password prefix-icon="el-icon-lock" v-model="loginForm.password"></el-input>
         </el-form-item>
-          <el-form-item>
+          <el-form-item prop="code">
             <el-row :gutter="18" >
               <el-col :span="16">
-                   <el-input placeholder="请输入验证码" prefix-icon="el-icon-key"></el-input>
+                   <el-input placeholder="请输入验证码" prefix-icon="el-icon-key" v-model="loginForm.code"></el-input>
               </el-col>
                <el-col :span="8">
                    <img class="captcha" src="http://47.106.148.205/heimamm/public/captcha?type=login&random=0.1115232862923281" alt="">
@@ -43,7 +43,35 @@
 </template>
 
 <script>
-export default {};
+export default {
+  name:'Login',
+  data() {
+    return {
+      // 模型
+      loginForm:{
+         phone:"",//手机号
+         password:"",//密码
+         code:"",//验证码
+      },
+      // 效验规则
+      rules:{
+        phone: [
+          // 是个数组里面可以写多个效验规则
+            { required: true, message: '请输入手机号', trigger: 'blur' },
+            { min: 11, max: 11, message: '手机号必须是11位', trigger: 'blur' }
+          ],
+          password: [
+            { required: true, message: '请输入密码', trigger: 'blur' },
+             { min: 6, max: 12, message: '长度为6到12个字符', trigger: 'blur' }
+          ],
+          code: [
+            { required: true, message: '请输入验证码', trigger: 'blur' },
+             { min: 4, max: 4, message: '长度必须是4位', trigger: 'blur' }
+          ],
+      }
+    }
+  },
+};
 </script>
 
 <style lang="less">
