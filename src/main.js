@@ -10,8 +10,15 @@ Vue.config.productionTip = false
 
 import router from '@/router';
 
+//improt xxx from 'xxx'与import 'xxx'的区别:
+// 前者是要返回一个xxx来用的;后者是该文件依赖'xxx'文件而已,不需要返回什么来用
+// 并且前者这种,他的'xxx'文件也有export default xxx导出什么出来;后者就没有导出仅依赖关系而已
+
 // 导入elementui
 import '@/plugins/elementui.js'
+
+//导入封装的axios
+import '@/ultils/request.js'
 
 new Vue({
   render: h => h(App),

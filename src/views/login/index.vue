@@ -8,32 +8,39 @@
         <span class="sub-title">用户登录</span>
       </div>
       <!-- form表单部分 -->
-      <el-form class="login-form" :model="loginForm" :rules="rules">
+      <el-form class="login-form" :model="loginForm" :rules="rules" ref="loginRef">
         <el-form-item prop="phone">
           <el-input placeholder="请输入手机号" prefix-icon="el-icon-user" v-model="loginForm.phone"></el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input placeholder="请输入密码" show-password prefix-icon="el-icon-lock" v-model="loginForm.password"></el-input>
+          <el-input
+            placeholder="请输入密码"
+            show-password
+            prefix-icon="el-icon-lock"
+            v-model="loginForm.password"
+          ></el-input>
         </el-form-item>
-          <el-form-item prop="code">
-            <el-row :gutter="18" >
-              <el-col :span="16">
-                   <el-input placeholder="请输入验证码" prefix-icon="el-icon-key" v-model="loginForm.code"></el-input>
-              </el-col>
-               <el-col :span="8">
-                   <img class="captcha" src="http://47.106.148.205/heimamm/public/captcha?type=login&random=0.1115232862923281" alt="">
-              </el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item prop="isCheck">
-             <el-checkbox v-model="loginForm.isCheck"></el-checkbox> 我已阅读并同意<el-link type="primary" href="http://www.baidu.com">用户协议</el-link>和<el-link type="primary" href="http://www.baidu.com">隐私条款</el-link>
-          </el-form-item>
-           <el-form-item>
-             <el-button type="primary" style="width:100%">登录</el-button>
-          </el-form-item>
-          <el-form-item>
-             <el-button type="primary" style="width:100%">注册</el-button>
-          </el-form-item>
+        <el-form-item prop="code">
+          <el-row :gutter="18">
+            <el-col :span="16">
+              <el-input placeholder="请输入验证码" prefix-icon="el-icon-key" v-model="loginForm.code"></el-input>
+            </el-col>
+            <el-col :span="8">
+              <img class="captcha" :src="codeURL" @click="getCaptcha" alt />
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item prop="isCheck">
+          <el-checkbox v-model="loginForm.isCheck"></el-checkbox>我已阅读并同意
+          <el-link type="primary" href="http://www.baidu.com">用户协议</el-link>和
+          <el-link type="primary" href="http://www.baidu.com">隐私条款</el-link>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" style="width:100%" @click="loginClick">登录</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" style="width:100%">注册</el-button>
+        </el-form-item>
       </el-form>
     </div>
     <div class="right">
@@ -44,56 +51,94 @@
 
 <script>
 export default {
-  name:'Login',
+  name: "Login",
   data() {
     return {
+      //process.env.VUE_APP_BASEURL,就可以拿到开发环境中的基地址,后面接的是要拿验证码的请求
+      codeURL: process.env.VUE_APP_BASEURL + "/captcha?type=login",
       // 模型
-      loginForm:{
-         phone:"",//手机号
-         password:"",//密码
-         code:"",//验证码
-         isCheck:false,//是否勾选了用户协议
+      loginForm: {
+        phone: "13260562029", //手机号
+        password: "123456", //密码
+        code: "", //验证码
+        isCheck: true //是否勾选了用户协议
       },
       // 效验规则
-      rules:{
+      rules: {
         phone: [
           // 是个数组里面可以写多个效验规则
-           // { required: true, message: '请输入手机号', trigger: 'blur' },
-            //{ min: 11, max: 11, message: '手机号必须是11位', trigger: 'blur' }
-            {validator: (rule,value,callback)=>{
-                   if (!value) {
-                     //这里的return不是让你返回这个callback是让你不要往下执行了,函数就此打断
-                     return callback(new Error("手机号不能为空"))
-                   }
-                   //手机号的正则表达式
-                   const reg = /^1[3456789][0-9]{9}$/;
-                   if (!reg.test(value)) {
-                       return callback(new Error("手机号不合法"));
-                   }
+          // { required: true, message: '请输入手机号', trigger: 'blur' },
+          //{ min: 11, max: 11, message: '手机号必须是11位', trigger: 'blur' }
+          {
+            validator: (rule, value, callback) => {
+              if (!value) {
+                //这里的return不是让你返回这个callback是让你不要往下执行了,函数就此打断
+                return callback(new Error("手机号不能为空"));
+              }
+              //手机号的正则表达式
+              const reg = /^1[3456789][0-9]{9}$/;
+              if (!reg.test(value)) {
+                return callback(new Error("手机号不合法"));
+              }
 
-                   callback();
-            }, trigger: 'blur' }
-          ],
-          password: [
-            { required: true, message: '请输入密码', trigger: 'blur' },
-             { min: 6, max: 12, message: '长度为6到12个字符', trigger: 'blur' }
-          ],
-          code: [
-            { required: true, message: '请输入验证码', trigger: 'blur' },
-             { min: 4, max: 4, message: '长度必须是4位', trigger: 'blur' }
-          ],
-          isCheck:[
-            {validator:(rule,value,callback)=>{
-                  if (!value) {
-                   //这里的return不是让你返回这个callback是让你不要往下执行了,函数就此打断
-                     return callback(new Error("必须勾选用户协议"))
-                  }
-                 callback();    
-            },trigger: 'change' }
-          ]
+              callback();
+            },
+            trigger: "blur"
+          }
+        ],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          { min: 6, max: 12, message: "长度为6到12个字符", trigger: "blur" }
+        ],
+        code: [
+          { required: true, message: "请输入验证码", trigger: "blur" },
+          { min: 4, max: 4, message: "长度必须是4位", trigger: "blur" }
+        ],
+        isCheck: [
+          {
+            validator: (rule, value, callback) => {
+              if (!value) {
+                //这里的return不是让你返回这个callback是让你不要往下执行了,函数就此打断
+                return callback(new Error("必须勾选用户协议"));
+              }
+              callback();
+            },
+            trigger: "change"
+          }
+        ]
       }
-    }
+    };
   },
+  methods: {
+    //  点击验证码获取新的验证码,后面要跟一个随机数表示每次发送请求的url不一样,图片的src属性发送请求会有缓存
+    getCaptcha() {
+      this.codeURL =  process.env.VUE_APP_BASEURL + "/captcha?type=login&" +Math.random() * 999;
+    },
+    //  点击登录按钮的时候 还要最后对form表单做一次校验,保证都填入了内容并且是合法的内容
+    loginClick() {
+      this.$refs.loginRef.validate(valid => {
+       // console.log(valid);这里的如果校验通过了就是true,
+        //  校验没通过直接退出整个函数
+        if (!valid) return;
+
+        //  如果校验成功就发生请求
+        this.$axios.post("/login", this.loginForm).then(res => {
+           console.log(res);
+          if (res.data.code==200) {
+            this.$message({
+            message: '登陆成功',
+            type: 'success'
+        });
+          }else{
+             this.$message.error(res.data.message);
+            //  登录失败的话就发送请求重新获得验证码
+            this.codeURL =  process.env.VUE_APP_BASEURL + "/captcha?type=login&" +Math.random() * 999;
+             
+          }
+        });
+      });
+    }
+  }
 };
 </script>
 
