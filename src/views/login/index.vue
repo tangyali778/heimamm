@@ -39,23 +39,33 @@
           <el-button type="primary" style="width:100%" @click="loginClick">登录</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" style="width:100%">注册</el-button>
+          <el-button type="primary" style="width:100%" @click="registerClick">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="right">
       <img src="@/assets/login_bg.png" alt />
     </div>
+    <!-- 3.使用 -->
+    <register ref="registerRef"></register>
+    <!-- <register :isShow="isShow"></register> -->
   </div>
 </template>
 
 <script>
+//1.导入子组件register
+import register from "./register";
 //按需导入
 import { setToken } from "@/ultils/token";
 export default {
   name: "Login",
+  // 2.注册子组件
+  components: {
+    register
+  },
   data() {
-    return {
+   return {
+      isShow:false,
       //process.env.VUE_APP_BASEURL,就可以拿到开发环境中的基地址,后面接的是要拿验证码的请求
       codeURL: process.env.VUE_APP_BASEURL + "/captcha?type=login",
       // 模型
@@ -72,6 +82,7 @@ export default {
           // { required: true, message: '请输入手机号', trigger: 'blur' },
           //{ min: 11, max: 11, message: '手机号必须是11位', trigger: 'blur' }
           {
+            //这里的rule指的是该校验本身，value指的是input里面输入的值，，callback就是告诉我们输入的内容ok不ok合法不合法
             validator: (rule, value, callback) => {
               if (!value) {
                 //这里的return不是让你返回这个callback是让你不要往下执行了,函数就此打断
@@ -127,7 +138,7 @@ export default {
         if (!valid) return;
 
         // 1.异步代码 如果校验成功就发生请求
-        
+
         // this.$axios.post("/login", this.loginForm).then(res => {
         //   console.log(res);
         //   if (res.data.code == 200) {
@@ -150,23 +161,22 @@ export default {
         //   }
         // });
 
-       // 2.看起来像同步实际是异步代码的发送请求,与上面的then获得结果都是一样的,用哪个都行
-         const res = await this.$axios.post("/login", this.loginForm);
+        // 2.看起来像同步实际是异步代码的发送请求,与上面的then获得结果都是一样的,用哪个都行
+        const res = await this.$axios.post("/login", this.loginForm);
 
         if (res.data.code === 200) {
           // 提示
           this.$message({
             message: "登录成功~",
-            type: "success",
+            type: "success"
           });
 
           //  登录成功之后要保存token
-          setToken(res.data.data.token)
+          setToken(res.data.data.token);
 
           // 跳转到后台管理页面
-          this.$router.push('/layout')
+          this.$router.push("/layout");
         } else {
-
           this.$message.error(res.data.message);
 
           this.codeURL =
@@ -175,6 +185,10 @@ export default {
             (new Date() - 0);
         }
       });
+    },
+    registerClick() {
+      this.$refs.registerRef.dialogVisible = true;
+      // this.isShow=true
     }
   }
 };
