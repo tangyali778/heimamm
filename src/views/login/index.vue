@@ -127,7 +127,7 @@ export default {
     getCaptcha() {
       this.codeURL =
         process.env.VUE_APP_BASEURL +
-        "/captcha?type=login&" +
+        "/captcha?type=login&r=" +
         Math.random() * 999;
     },
     //  点击登录按钮的时候 还要最后对form表单做一次校验,保证都填入了内容并且是合法的内容
