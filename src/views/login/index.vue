@@ -82,7 +82,7 @@ export default {
           // { required: true, message: '请输入手机号', trigger: 'blur' },
           //{ min: 11, max: 11, message: '手机号必须是11位', trigger: 'blur' }
           {
-            //这里的rule指的是该校验本身，value指的是input里面输入的值，，callback就是告诉我们输入的内容ok不ok合法不合法
+            //这里的rule指的是校验对象，value指的是input里面输入的值，，callback就是告诉我们输入的内容ok不ok合法不合法
             validator: (rule, value, callback) => {
               if (!value) {
                 //这里的return不是让你返回这个callback是让你不要往下执行了,函数就此打断
