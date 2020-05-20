@@ -9,7 +9,7 @@ axios.defaults.baseURL = process.env.VUE_APP_BASEURL
 axios.defaults.withCredentials=true;
 
 // Add a request interceptor
-// 请求拦截器
+// 请求拦截器,发送请求要把token带过去可以在这里面写
 axios.interceptors.request.use(function (config) {
     // Do something before request is sent
     const token = getToken()
