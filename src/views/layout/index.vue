@@ -14,10 +14,32 @@
       </div>
     </el-header>
     <el-container>
-      <el-aside width="200px">
-           菜单部分
+      <el-aside width="auto">
+        <!-- 左侧导航栏 -->
+        <el-menu default-active="5" class="el-menu-vertical-demo" :collapse="isCollapse">
+          <el-menu-item index="1">
+            <i class="el-icon-pie-chart"></i>
+            <span slot="title">数据概览</span>
+          </el-menu-item>
+          <el-menu-item index="2">
+            <i class="el-icon-user"></i>
+            <span slot="title">用户列表</span>
+          </el-menu-item>
+          <el-menu-item index="3">
+            <i class="el-icon-edit-outline"></i>
+            <span slot="title">题库列表</span>
+          </el-menu-item>
+          <el-menu-item index="4">
+            <i class="el-icon-office-building"></i>
+            <span slot="title">企业列表</span>
+          </el-menu-item>
+          <el-menu-item index="5">
+            <i class="el-icon-notebook-2"></i>
+            <span slot="title">学科列表</span>
+          </el-menu-item>
+        </el-menu>
       </el-aside>
-      <el-main>内容部分</el-main>
+      <el-main style="background-color: #e8e9ec">内容部分</el-main>
     </el-container>
   </el-container>
 </template>
@@ -108,6 +130,17 @@ export default {
       }
     }
   }
-
+  .el-menu {
+    border-right: solid 0px #e6e6e6;
+    list-style: none;
+    position: relative;
+    margin: 0;
+    padding-left: 0;
+    background-color: #fff;
+  }
+  .el-menu-vertical-demo:not(.el-menu--collapse) {
+    width: 200px;
+    min-height: 400px;
+  }
 }
 </style>
