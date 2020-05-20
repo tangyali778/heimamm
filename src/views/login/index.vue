@@ -64,8 +64,8 @@ export default {
     register
   },
   data() {
-   return {
-      isShow:false,
+    return {
+      isShow: false,
       //process.env.VUE_APP_BASEURL,就可以拿到开发环境中的基地址,后面接的是要拿验证码的请求
       codeURL: process.env.VUE_APP_BASEURL + "/captcha?type=login",
       // 模型
@@ -163,6 +163,7 @@ export default {
 
         // 2.看起来像同步实际是异步代码的发送请求,与上面的then获得结果都是一样的,用哪个都行
         const res = await this.$axios.post("/login", this.loginForm);
+        //console.log(res);
 
         if (res.data.code === 200) {
           // 提示

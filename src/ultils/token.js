@@ -7,8 +7,8 @@ const getToken = () => {
     return localStorage.getItem(KEY)
 }
 const removeToken = () => {
-        return localStorage.getItem(KEY)
-    }
+     localStorage.removeItem(KEY)
+}
 
 //按需导出
 export {  setToken, getToken,removeToken}

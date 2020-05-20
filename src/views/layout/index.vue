@@ -1,5 +1,93 @@
 <template>
-    <div>
-        我是layout页面
-    </div>
+  <div class="layout">
+    <el-container>
+      <el-header class="header">
+        <div class="left">
+          <i class="el-icon-s-fold"></i>
+          <img src="@/assets/layout_icon.png" class="marginlr" alt />
+          <span class="title">黑马面面</span>
+        </div>
+
+        <div class="right">
+          <img :src="avatar" alt />
+          <span class="name">{{username}},您好</span>
+          <el-button size="mini" type="primary">退出</el-button>
+        </div>
+      </el-header>
+      <el-container>
+        <el-aside width="200px">左边菜单</el-aside>
+        <el-main>内容部分</el-main>
+      </el-container>
+    </el-container>
+  </div>
 </template>
+
+<script>
+
+export default {
+  data() {
+    return {
+      avatar: "", //用户头像
+      username: "" //用户昵称
+    };
+  },
+  methods: {
+    // 发送请求得到用户信息
+    async getUserData() {
+      const res = await this.$axios.get("/info", {
+        //这个在发送axios里面带过去也可以,但是后面每个请求都要写并且post与get方法写的地方还不一样
+      // 就很麻烦,可以写在拦截器里面,只要发送请求都会先经过那里
+        // headers: {
+        //   token: getToken(),//在请求头把token带过去
+        // }
+      });
+      // console.log(res);
+      if (res.data.code == 200) {
+        this.avatar = process.env.VUE_APP_BASEURL + "/" + res.data.data.avatar;
+        this.username = res.data.data.username;
+      }
+    }
+  },
+  created() {
+    this.getUserData();
+  }
+};
+</script>
+
+<style lang="less">
+.layout {
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #f3f3f3;
+    .left {
+      display: flex;
+      align-items: center;
+      .el-icon-s-fold {
+        font-size: 20px;
+      }
+      .marginlr {
+        margin: 0 10px 0 10px;
+      }
+      .title {
+        font-size: 22px;
+        color: #49a1ff;
+      }
+    }
+    .right {
+      display: flex;
+      align-items: center;
+      img {
+        width: 43px;
+        height: 43px;
+        margin-right: 9px;
+        border-radius: 50%;
+      }
+      .name {
+        margin-right: 38px;
+      }
+    }
+  }
+}
+</style>
