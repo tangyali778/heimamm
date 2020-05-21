@@ -22,7 +22,7 @@
         <el-form-item style="margin-left:80px">
           <el-button type="primary" @click="search">搜索</el-button>
           <el-button @click="clear">清除</el-button>
-          <el-button type="primary">+ 新增用户</el-button>
+          <el-button type="primary" @click="add">+ 新增用户</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -47,8 +47,9 @@
             <el-button type="primary">编辑</el-button>
             <el-button
               :type="scope.row.status===0? 'success':'info'"
+              @click="changeStatus(scope.row.id)"
             >{{scope.row.status===0?'启用':'禁用'}}</el-button>
-            <el-button>删除</el-button>
+            <el-button @click="deleteUser(scope.row.username,scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -65,11 +66,20 @@
         ></el-pagination>
       </div>
     </el-card>
+    <!-- 这两种写法都行 -->
+    <!-- <UserEdit></UserEdit> -->
+    <user-edit ref="userEditRef"></user-edit>
   </div>
 </template>
 
 <script>
+// 1.导入子组件
+import UserEdit from "./user-add-or-update";
 export default {
+  // 2.注册子组件
+  components: {
+    UserEdit
+  },
   name: "UserList",
   data() {
     return {
@@ -126,26 +136,73 @@ export default {
     },
     //搜索方法
     search() {
-      //搜索要显示第一页的数据,不要从当前页
+      //搜索要显示第一页的数据
       this.page = 1;
       this.getUserData();
     },
     // 清空方法
     clear() {
-      // 调用form表单的重置方法要搭配prop使用
+      // 法1:
+      // this.searchForm.username = ''
+      // this.searchForm.email = ''
+      // this.searchForm.role_id = ''
+      // 法2:调用form表单的重置方法要搭配form-item里面的prop使用
       this.$refs.searchRef.resetFields();
       // 显示第一页
       this.search();
     },
     //每页的容量改变
     handleSizeChange(val) {
-      this.limit = val;//页容量改变之后,是从第一页开始搜索
+      this.limit = val; //页容量改变之后,是从第一页开始搜索
       this.search();
     },
     // 当前页改变
     handleCurrentChange(val) {
-      this.page=val;//当前页码改变之后,是从选中的那个页码开始发送请求
-      this.getUserData()
+      this.page = val; //当前页码改变之后,是从选中的那个页码开始发送请求
+      this.getUserData();
+    },
+    //改变当前行的用户状态
+    async changeStatus(id) {
+      const res = await this.$axios.post("/user/status", { id });
+      //console.log(res);
+
+      if (res.data.code == 200) {
+        this.$message({
+          message: "更改成功",
+          type: "success"
+        });
+        //重新查询,展示第一页的数据内容
+        this.search();
+      }
+    },
+    // 删除该用户
+    deleteUser(username, id) {
+      this.$confirm(`确定删除${username}该用户吗?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          const res = await this.$axios.post("/user/remove", { id });
+          console.log(res);
+          // 成功就弹出提示框
+          if (res.data.code == 200) {
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+            //  并且要重新查询,展示第一页的数据内容
+            this.search();
+          }
+        })
+        .catch(() => {});
+    },
+    //新增用
+    add() {
+      // 点击新增的时候子组件user-add-or-update.vue组件展示
+      this.$refs.userEditRef.dialogVisible=true
+      // 并且修改他的子组件的modal值为add,表示是新增点的不是编辑点的
+       this.$refs.userEditRef.modal='add'
     }
   },
   created() {
