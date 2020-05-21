@@ -16,7 +16,12 @@
     <el-container>
       <el-aside width="auto">
         <!-- 左侧导航栏 -->
-        <el-menu default-active="5" class="el-menu-vertical-demo" :collapse="isCollapse" router>
+        <el-menu
+          :default-active="defaultActive"
+          class="el-menu-vertical-demo"
+          :collapse="isCollapse"
+          router
+        >
           <el-menu-item index="/layout/chart">
             <i class="el-icon-pie-chart"></i>
             <span slot="title">数据概览</span>
@@ -40,7 +45,7 @@
         </el-menu>
       </el-aside>
       <el-main style="background-color: #e8e9ec">
-         <router-view></router-view>
+        <router-view></router-view>
       </el-main>
     </el-container>
   </el-container>
@@ -54,7 +59,8 @@ export default {
     return {
       isCollapse: false, //导航栏是否展示
       avatar: "", //用户头像
-      username: "" //用户昵称
+      username: "", //
+      defaultActive: "" //菜单选中的值
     };
   },
   methods: {
@@ -94,6 +100,14 @@ export default {
   },
   created() {
     this.getUserData();
+    //进来的路由是哪个组件,左边菜单就高亮哪个菜单,并且刷新还是那个
+    if (this.$route.fullPath == "/layout") {
+      //默认就是用户列表菜单高亮且右边显示用户列表组件
+      this.defaultActive = "/layout/user";
+      this.$router.push("/layout/user");
+    } else {
+      this.defaultActive = this.$route.fullPath;
+    }
   }
 };
 </script>
