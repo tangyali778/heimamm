@@ -3,13 +3,13 @@
     <!-- 搜索部分 -->
     <el-card>
       <el-form inline :model="searchForm" ref="searchRef" label-width="80px">
-        <el-form-item label="用户名称">
+        <el-form-item label="用户名称" prop="username">
           <el-input style="width:240px" v-model="searchForm.username"></el-input>
         </el-form-item>
-        <el-form-item label="用户邮箱">
+        <el-form-item label="用户邮箱" prop="email">
           <el-input style="width:240px" v-model="searchForm.email"></el-input>
         </el-form-item>
-        <el-form-item label="角色">
+        <el-form-item label="角色" prop="role_id">
           <el-select style="width:240px" v-model="searchForm.role_id" placeholder="请选择">
             <el-option
               v-for="item in options"
@@ -20,8 +20,8 @@
           </el-select>
         </el-form-item>
         <el-form-item style="margin-left:80px">
-          <el-button type="primary">搜索</el-button>
-          <el-button>清除</el-button>
+          <el-button type="primary" @click="search">搜索</el-button>
+          <el-button @click="clear">清除</el-button>
           <el-button type="primary">+ 新增用户</el-button>
         </el-form-item>
       </el-form>
@@ -38,25 +38,39 @@
         <el-table-column prop="remark" label="备注"></el-table-column>
         <el-table-column label="状态">
           <template slot-scope="scope">
-           <span v-if="scope.row.status===0" style="color:red">禁用</span>
-           <span v-if="scope.row.status===1" style="color:#6ac144">启用</span>
+            <span v-if="scope.row.status===0" style="color:red">禁用</span>
+            <span v-if="scope.row.status===1" style="color:#6ac144">启用</span>
           </template>
         </el-table-column>
-           <el-table-column label="操作" width="280">
+        <el-table-column label="操作" width="280">
           <template slot-scope="scope">
             <el-button type="primary">编辑</el-button>
-            <el-button  :type="scope.row.status===0? 'success':'info'">{{scope.row.status===0?'启用':'禁用'}}</el-button>
+            <el-button
+              :type="scope.row.status===0? 'success':'info'"
+            >{{scope.row.status===0?'启用':'禁用'}}</el-button>
             <el-button>删除</el-button>
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页 -->
+      <div style="margin-top:15px;text-align:center">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="page"
+          :page-sizes="[2, 4, 6, 8]"
+          :page-size="limit"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        ></el-pagination>
+      </div>
     </el-card>
   </div>
 </template>
 
 <script>
 export default {
-  name: " userList",
+  name: "UserList",
   data() {
     return {
       // 模型
@@ -96,7 +110,7 @@ export default {
       const res = await this.$axios.get("/user/list", {
         params: {
           // 这个就相当于...this.searchForm
-           //  username: this.searchForm.username,
+          //  username: this.searchForm.username,
           //   email: this.searchForm.email,
           //   role_id: this.searchForm.role_id
           ...this.searchForm,
@@ -109,6 +123,29 @@ export default {
         this.userList = res.data.data.items;
         this.total = res.data.data.pagination.total;
       }
+    },
+    //搜索方法
+    search() {
+      //搜索要显示第一页的数据,不要从当前页
+      this.page = 1;
+      this.getUserData();
+    },
+    // 清空方法
+    clear() {
+      // 调用form表单的重置方法要搭配prop使用
+      this.$refs.searchRef.resetFields();
+      // 显示第一页
+      this.search();
+    },
+    //每页的容量改变
+    handleSizeChange(val) {
+      this.limit = val;//页容量改变之后,是从第一页开始搜索
+      this.search();
+    },
+    // 当前页改变
+    handleCurrentChange(val) {
+      this.page=val;//当前页码改变之后,是从选中的那个页码开始发送请求
+      this.getUserData()
     }
   },
   created() {
