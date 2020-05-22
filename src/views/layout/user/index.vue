@@ -75,10 +75,9 @@
 </template>
 
 <script>
-
 import UserEdit from "./user-add-or-update";
 export default {
- components: {
+  components: {
     UserEdit
   },
   name: "UserList",
@@ -94,7 +93,7 @@ export default {
       limit: 2, // 查询时候的页容量(每页查询多少条)
       userList: [], //存放发送请求得到的用户信息
       total: 0,
-      modal:'add',///法2:传值给子组件
+      modal: "add", ///法2:传值给子组件
 
       options: [
         {
@@ -201,18 +200,48 @@ export default {
     },
     //新增用户
     add() {
+      
       // 点击新增的时候子组件user-add-or-update.vue组件展示
-      this.$refs.userEditRef.dialogVisible=true
+      this.$refs.userEditRef.dialogVisible = true;
 
       // 并且修改他的子组件的modal值为add,表示是新增点的不是编辑点的
       //法1.用refs方法传值子组件
-     //  this.$refs.userEditRef.modal='add'
-     //法2:用props的方法传值子组件
+      //  this.$refs.userEditRef.modal='add'
+      //法2:用props的方法传值子组件
+       this.modal = "add";
+
+      // 解决点击新增时在表单上输入一些内容按x或者取消后,再点击新增时,form表单内容还存在上一次输入的内容
+      //方法1:点击新增之前先把这个form内容全部清空
+       this.$refs.userEditRef.addForm = {
+          username: "", // 用户名
+          email: "", // 邮箱
+          phone: "", // 手机号
+          role_id: "", // 角色 1：超级管理员 2：管理员 3：老师 4：学生
+          status: "", // 状态 1：启用 0：禁用
+          remark: "" // 备注
+        };
+      // 方法1:再把校验清空
+      this.$nextTick(()=>{
+        this.$refs.userEditRef.$refs.addFormRef.clearValidate()
+      })
+
+      //方法2:调用form表单的resetFields()方法不管内容还是校验全部清空
+      // this.$nextTick(() => {
+      //   this.$refs.userEditRef.$refs.addFormRef.resetFields();
+      // });
     },
-    // 点击编辑按钮时修改用户
-    editUser(){
-         this.$refs.userEditRef.dialogVisible=true
-         this.modal='edit'
+    // 修改用户
+    editUser(row) {
+      this.modal = "edit";
+     //console.log(row);//这里的row就是点击编辑的那行的数据(是个对象)
+      this.$refs.userEditRef.dialogVisible = true;
+      //this.$refs.userEditRef.addForm = row 这种是浅拷贝,一改就把那行本来的数据也改了,所以不行
+      //this.$refs.userEditRef.addForm = {...row }//深拷贝第一种,但是这种只能拷贝一层
+      this.$refs.userEditRef.addForm = JSON.parse(JSON.stringify(row)); //深拷贝第二种,无论对象的层次有多深都能进行拷贝
+      
+     this.$nextTick(() => {
+        this.$refs.userEditRef.$refs.addFormRef.clearValidate()
+     });
     }
   },
 
