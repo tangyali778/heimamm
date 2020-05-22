@@ -11,6 +11,7 @@ import {
 // login文件夹下是index.js.所以下面导入的时候选到文件夹这里就行了,会自动选中index.js文件
 import Login from "@/views/login";
 import Layout from "@/views/layout";
+import Welcome from "@/views/layout/welcome";
 import Chart from "@/views/layout/chart";
 import User from "@/views/layout/user";
 import Enterprise from "@/views/layout/enterprise";
@@ -30,6 +31,7 @@ const router = new VueRouter({
             path: '/layout',
             component: Layout,
             children: [
+                {path:'welcome',component:Welcome},
                 {path:'chart',component:Chart},
                 {path:'user',component:User},
                 {path:'enterprise',component:Enterprise},

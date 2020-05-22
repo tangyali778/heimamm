@@ -22,6 +22,10 @@
           :collapse="isCollapse"
           router
         >
+          <el-menu-item index="/layout/welcome">
+            <i class="el-icon-date"></i>
+            <span slot="title">个人信息</span>
+          </el-menu-item>
           <el-menu-item index="/layout/chart">
             <i class="el-icon-pie-chart"></i>
             <span slot="title">数据概览</span>
@@ -98,17 +102,23 @@ export default {
         .catch(() => {});
     }
   },
+  //法1:在登录成功之后那里写 this.$router.push("/layout/welcome")跳转到欢迎页面,
   created() {
     this.getUserData();
-    //进来的路由是哪个组件,左边菜单就高亮哪个菜单,并且刷新还是那个
-    if (this.$route.fullPath == "/layout") {
-      //默认就是用户列表菜单高亮且右边显示用户列表组件
-      this.defaultActive = "/layout/user";
-      this.$router.push("/layout/user");
-    } else {
-      this.defaultActive = this.$route.fullPath;
-    }
+    this.defaultActive = this.$route.fullPath;
   }
+  //法2:从这里修改登录之后默认显示user页面
+  // created() {
+  //   this.getUserData();
+  //   //进来的路由是哪个组件,左边菜单就高亮哪个菜单,并且刷新还是那个
+  //   if (this.$route.fullPath == "/layout") {
+  //     //默认就是用户列表菜单高亮且右边显示用户列表组件
+  //     this.defaultActive = "/layout/user";
+  //     this.$router.push("/layout/user");
+  //   } else {
+  //     this.defaultActive = this.$route.fullPath;
+  //   }
+  // }
 };
 </script>
 

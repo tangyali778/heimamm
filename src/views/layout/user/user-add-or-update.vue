@@ -43,10 +43,21 @@
 
 <script>
 export default {
+  name: "UserEdit",
+
+  //法2: 接受父组件传来的值用props方法
+  props: {
+    modal: {
+      type: String,
+      //没有传值的话就用这个default里面的
+      default: "add"
+    }
+  },
+
   data() {
     return {
       dialogVisible: false, //控制Dialog的显示与否
-      modal: "", //决定是新增还是编辑点的,add是新增,edit是编辑
+      //modal: "", //决定是新增还是编辑点的,add是新增,edit是编辑
       addForm: {
         username: "", // 用户名
         email: "", // 邮箱
@@ -117,7 +128,7 @@ export default {
         } else {
           //成功就发送编辑用户请求
         }
-        
+
         if (res.data.code == 200) {
           this.$message({
             message: this.modal == "add" ? "新增成功" : "编辑成功",
@@ -127,9 +138,10 @@ export default {
           this.dialogVisible = false;
 
           // 刷新父组件的search方法,重新展示新增之后的数据
-          // 第一种 this.$emit()
-          // 第二种 this.$parent.search()
-          this.$parent.search();
+          // 第一种 this.$parent.search()
+          // this.$parent.search();
+          // 第二种 this.$emit()
+          this.$emit('editok');
         } else {
           this.$message.error(res.data.message);
         }

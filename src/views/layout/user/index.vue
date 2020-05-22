@@ -44,7 +44,7 @@
         </el-table-column>
         <el-table-column label="操作" width="280">
           <template slot-scope="scope">
-            <el-button type="primary">编辑</el-button>
+            <el-button type="primary" @click="editUser(scope.row)">编辑</el-button>
             <el-button
               :type="scope.row.status===0? 'success':'info'"
               @click="changeStatus(scope.row.id)"
@@ -66,18 +66,19 @@
         ></el-pagination>
       </div>
     </el-card>
-    <!-- 这两种写法都行 -->
     <!-- <UserEdit></UserEdit> -->
-    <user-edit ref="userEditRef"></user-edit>
+    <!-- <user-edit ref="userEditRef"></user-edit> -->
+    <!-- 法2:传值给子组件 -->
+    <!-- 第二种:子组件传值父组件 监听传来的这个事件触发@editok="search-->
+    <user-edit ref="userEditRef" :modal="modal" @editok="search"></user-edit>
   </div>
 </template>
 
 <script>
-// 1.导入子组件
+
 import UserEdit from "./user-add-or-update";
 export default {
-  // 2.注册子组件
-  components: {
+ components: {
     UserEdit
   },
   name: "UserList",
@@ -93,6 +94,7 @@ export default {
       limit: 2, // 查询时候的页容量(每页查询多少条)
       userList: [], //存放发送请求得到的用户信息
       total: 0,
+      modal:'add',///法2:传值给子组件
 
       options: [
         {
@@ -197,14 +199,23 @@ export default {
         })
         .catch(() => {});
     },
-    //新增用
+    //新增用户
     add() {
       // 点击新增的时候子组件user-add-or-update.vue组件展示
       this.$refs.userEditRef.dialogVisible=true
+
       // 并且修改他的子组件的modal值为add,表示是新增点的不是编辑点的
-       this.$refs.userEditRef.modal='add'
+      //法1.用refs方法传值子组件
+     //  this.$refs.userEditRef.modal='add'
+     //法2:用props的方法传值子组件
+    },
+    // 点击编辑按钮时修改用户
+    editUser(){
+         this.$refs.userEditRef.dialogVisible=true
+         this.modal='edit'
     }
   },
+
   created() {
     // 获取用户列表数据,用户内容展示
     this.getUserData();

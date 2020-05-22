@@ -175,8 +175,8 @@ export default {
           //  登录成功之后要保存token
           setToken(res.data.data.token);
 
-          // 跳转到后台管理页面
-          this.$router.push("/layout");
+          // 登录成功后跳转到layout/welcome欢迎页面
+          this.$router.push("/layout/welcome");
         } else {
           this.$message.error(res.data.message);
 
