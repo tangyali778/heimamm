@@ -2,7 +2,7 @@
   <div>
     <el-card>
       <!-- 搜索部分 -->
-      <el-form inline :model="searchForm" ref="searchFormRef">
+      <el-form inline :model="searchForm" ref="searchFormRef" label-width="80px">
         <el-form-item label="企业编号" prop="eid">
           <el-input v-model="searchForm.eid"></el-input>
         </el-form-item>
@@ -42,7 +42,7 @@
         </el-table-column>
         <el-table-column label="操作" width="280">
           <template slot-scope="scope">
-            <el-button type="primary">编辑</el-button>
+            <el-button type="primary" @click="editEnterprise(scope.row)">编辑</el-button>
             <el-button
               @click="changeStatus(scope.row.id)"
               :type="scope.row.status===1?'info':'success'"
@@ -64,16 +64,17 @@
         ></el-pagination>
       </div>
     </el-card>
-   <enterprise-edit ref="enterpriseEditRef"></enterprise-edit>
+    <enterprise-edit ref="enterpriseEditRef"></enterprise-edit>
   </div>
 </template>
 
 <script>
-import EnterpriseEdit from './enterprise=add=or-update'
+// 导入子组件
+import EnterpriseEdit from "./enterprise=add=or-update";
 export default {
   name: "EnterPrise",
   //局部注册
-  components:{
+  components: {
     EnterpriseEdit
   },
   data() {
@@ -135,8 +136,8 @@ export default {
           message: "更改成功",
           type: "success"
         });
-        //重新查询,展示第一页的数据内容
-        this.search();
+        //刷新
+        this.getEnterPriseData();
       }
     },
     //删除
@@ -155,14 +156,43 @@ export default {
             });
           }
           // 重新搜索
-          this.search()
+          this.search();
         })
         .catch(() => {});
     },
     // 点击新增企业按钮
     add() {
-      this.$refs.enterpriseEditRef.modal='add';//告诉子组件是新增点过来的不是编辑
-      this.$refs.enterpriseEditRef.dialogVisible=true//子组件可见
+      this.$refs.enterpriseEditRef.modal = "add"; //告诉子组件是新增点过来的不是编辑
+      this.$refs.enterpriseEditRef.dialogVisible = true; //子组件可见
+      //清空内容
+      this.$refs.enterpriseEditRef.addForm = {
+        eid: "", //企业编号
+        name: "", //企业名称
+        short_name: "", //简称
+        intro: "", //企业简介
+        remark: "" //备注
+      };
+      // this.$nextTick(() => {
+      //   this.$refs.enterpriseEditRef.$refs.addFormRef.clearValidate(); //清空校验
+      // });
+    },
+    // 点击编辑企业按钮
+    editEnterprise(row) {
+      //console.log(row);
+      this.$refs.enterpriseEditRef.modal = "edit";
+      this.$refs.enterpriseEditRef.dialogVisible = true;
+      const { id, eid, name, short_name, intro, remark } = row; //把row里面的部分属性的值赋值给左边那些属性
+      this.$refs.enterpriseEditRef.addForm = {
+        id,
+        eid,
+        name,
+        short_name,
+        intro,
+        remark
+      };
+      // this.$nextTick(() => {
+      //  this.$refs.enterpriseEditRef.$refs.addFormRef.clearValidate(); //清空校验
+      // });
     }
   },
   created() {

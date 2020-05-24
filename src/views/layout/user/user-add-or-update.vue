@@ -148,7 +148,15 @@ export default {
         }
       });
     }
-  }
+  },
+  watch: {
+    dialogVisible(newValue){
+      if (!newValue) {
+        //当dialog对话框不可见的时候把校验都清空,此时dom都已经渲染过了不需要用$nextTick
+        this.$refs.addFormRef.clearValidate()
+      }
+    }
+  },
 };
 </script>
 

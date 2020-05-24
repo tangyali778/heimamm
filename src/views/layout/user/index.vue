@@ -172,8 +172,8 @@ export default {
           message: "更改成功",
           type: "success"
         });
-        //重新查询,展示第一页的数据内容
-        this.search();
+        //刷新
+        this.getUserData();
       }
     },
     // 删除该用户
@@ -221,14 +221,19 @@ export default {
           remark: "" // 备注
         };
       // 方法1:再把校验清空
-      this.$nextTick(()=>{
-        this.$refs.userEditRef.$refs.addFormRef.clearValidate()
-      })
+      // this.$nextTick(()=>{
+      //   this.$refs.userEditRef.$refs.addFormRef.clearValidate()
+      // })
 
       //方法2:调用form表单的resetFields()方法不管内容还是校验全部清空
+      // 这个方法不是很好用还是有bug,当第一次点击编辑叉掉再点击新增时还是有内容,所以不用这个啦!
       // this.$nextTick(() => {
       //   this.$refs.userEditRef.$refs.addFormRef.resetFields();
       // });
+
+      // 方法3:
+      // 把这里的方法1中的this.$nextTick与修改用户的this.$nextTick里的这段代码写在user-add-or-update组件中去
+      // 写在watch里面,监听dialogVisible的变化
     },
     // 修改用户
     editUser(row) {
@@ -239,9 +244,9 @@ export default {
       //this.$refs.userEditRef.addForm = {...row }//深拷贝第一种,但是这种只能拷贝一层
       this.$refs.userEditRef.addForm = JSON.parse(JSON.stringify(row)); //深拷贝第二种,无论对象的层次有多深都能进行拷贝
       
-     this.$nextTick(() => {
-        this.$refs.userEditRef.$refs.addFormRef.clearValidate()
-     });
+    //  this.$nextTick(() => {
+    //     this.$refs.userEditRef.$refs.addFormRef.clearValidate()
+    //  });
     }
   },
 
