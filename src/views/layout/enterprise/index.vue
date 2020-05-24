@@ -47,7 +47,7 @@
               @click="changeStatus(scope.row.id)"
               :type="scope.row.status===1?'info':'success'"
             >{{scope.row.status===1?"禁用":"启用"}}</el-button>
-            <el-button @click="deleteUser(scope.row.name,scope.row.id)">删除</el-button>
+            <el-button @click="deleteEnterprise(scope.row.name,scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -64,12 +64,18 @@
         ></el-pagination>
       </div>
     </el-card>
+   <enterprise-edit ref="enterpriseEditRef"></enterprise-edit>
   </div>
 </template>
 
 <script>
+import EnterpriseEdit from './enterprise=add=or-update'
 export default {
   name: "EnterPrise",
+  //局部注册
+  components:{
+    EnterpriseEdit
+  },
   data() {
     return {
       //模型
@@ -134,7 +140,7 @@ export default {
       }
     },
     //删除
-    deleteUser(eid, id) {
+    deleteEnterprise(eid, id) {
       this.$confirm(`确定删除${name}这个企业吗`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -153,8 +159,11 @@ export default {
         })
         .catch(() => {});
     },
-    // 新增企业
-    add() {}
+    // 点击新增企业按钮
+    add() {
+      this.$refs.enterpriseEditRef.modal='add';//告诉子组件是新增点过来的不是编辑
+      this.$refs.enterpriseEditRef.dialogVisible=true//子组件可见
+    }
   },
   created() {
     this.getEnterPriseData();
