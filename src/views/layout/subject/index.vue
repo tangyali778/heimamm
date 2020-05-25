@@ -66,11 +66,16 @@
         ></el-pagination>
       </div>
     </el-card>
+    <subject-edit ref="subjectEditRef"></subject-edit>
   </div>
 </template>
 
 <script>
+import SubjectEdit from './subject-add-or-update'
 export default {
+  components:{
+   SubjectEdit  
+  },
   name: "Subject",
   data() {
     return {
@@ -162,7 +167,10 @@ export default {
       this.getSubjectData();
     },
     // 新增学科
-    add() {},
+    add() {
+       this.$refs.subjectEditRef.modal='add'
+       this.$refs.subjectEditRef.dialogVisible=true
+    },
     // 编辑
     editSubject(row) {
       console.log(row);

@@ -29,7 +29,7 @@
     <!-- 内容部分 -->
     <el-card style="margin-top:20px;">
       <!-- 表格 -->
-      <el-table :data="userList" stripe style="width: 100%">
+      <el-table :data="userList" stripe border style="width: 100%">
         <el-table-column type="index" label="序号" width="80"></el-table-column>
         <el-table-column prop="username" label="用户名"></el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>
