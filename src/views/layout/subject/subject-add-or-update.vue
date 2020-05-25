@@ -57,7 +57,42 @@ export default {
   },
   methods: {
     //点击确定按钮
-    submit() {}
+    submit() {
+      this.$refs.subjectFormRef.validate(async valid => {
+        if (!valid) return;
+
+        let res = "";
+        if (this.modal === "add") {
+          res = await this.$axios.post("/subject/add", this.subjectForm);
+        } else {
+          res = await this.$axios.post("/subject/edit", this.subjectForm);
+        }
+
+        if (res.data.code == 200) {
+          //提示
+          this.$message({
+            type: "success",
+            message: this.modal === "add" ? "新增成功" : "编辑成功"
+          });
+
+          //关闭当前对话框
+          this.dialogVisible = false;
+          //调用父组件的search方法刷新学科列表
+          this.$parent.search();
+        } else {
+          this.$message.error(res.data.message);
+        }
+      });
+    }
+  },
+  //监听dialogVisible的变化
+  watch: {
+    dialogVisible(newValue) {
+      //当dialogVisible为false的时候
+      if (!newValue) {
+        this.$refs.subjectFormRef.clearValidate(); //清空校验
+      }
+    }
   }
 };
 </script>

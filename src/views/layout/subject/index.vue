@@ -2,7 +2,7 @@
   <div>
     <el-card>
       <!-- 搜索部分 -->
-      <el-form inline :model="searchForm" ref="searchFormRef"  label-width="80px">
+      <el-form inline :model="searchForm" ref="searchFormRef" label-width="80px">
         <el-form-item label="学科编号" prop="rid">
           <el-input v-model="searchForm.rid"></el-input>
         </el-form-item>
@@ -71,10 +71,10 @@
 </template>
 
 <script>
-import SubjectEdit from './subject-add-or-update'
+import SubjectEdit from "./subject-add-or-update";
 export default {
-  components:{
-   SubjectEdit  
+  components: {
+    SubjectEdit
   },
   name: "Subject",
   data() {
@@ -168,12 +168,33 @@ export default {
     },
     // 新增学科
     add() {
-       this.$refs.subjectEditRef.modal='add'
-       this.$refs.subjectEditRef.dialogVisible=true
+      this.$refs.subjectEditRef.modal = "add";
+      this.$refs.subjectEditRef.dialogVisible = true;
+      // 解决点击新增&编辑弹出的框里面还有数据和校验的问题(清空校验在子组件watch里面)
+      this.$refs.subjectEditRef.subjectForm = {
+        rid: "", //学科编号
+        name: "", //学科名称
+        short_name: "", //学科简称
+        intro: "", //学科简介
+        remark: "" //备注
+      };
     },
     // 编辑
     editSubject(row) {
-      console.log(row);
+      this.$refs.subjectEditRef.modal = "edit";
+      this.$refs.subjectEditRef.dialogVisible = true;
+
+      // this.$refs.subjectEditRef.subjectForm = JSON.parse(JSON.stringify(row));
+      // row里面有很多东西,有些东西后台不一定要,看后台文档,做对象解构要部分就行
+      const { id, rid, name, short_name, intro, remark } = row;
+      this.$refs.subjectEditRef.subjectForm = {
+        id, //学科id
+        rid, //学科编号
+        name, //学科名称
+        short_name, //学科简称
+        intro, //学科简介
+        remark //备注
+      };
     }
   }
 };
