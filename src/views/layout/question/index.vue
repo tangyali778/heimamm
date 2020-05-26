@@ -88,7 +88,7 @@
             <el-form-item>
               <el-button type="primary" @click="search">搜索</el-button>
               <el-button @click="clear">清除</el-button>
-              <el-button type="primary">+新增试题</el-button>
+              <el-button type="primary" @click="add">+新增试题</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -157,11 +157,24 @@
         ></el-pagination>
       </div>
     </el-card>
+    <!-- 传给子组件的值 -->
+    <qusetion-edit
+      ref="questionEditRef"
+      :subjectList="subjectList"
+      :enterpriseList="enterpriseList"
+      :stepObj="stepObj"
+      :typeObj="typeObj"
+      :difficultyObj="difficultyObj"
+    ></qusetion-edit>
   </div>
 </template>
 
 <script>
+import QusetionEdit from "./question-add-or-update";
 export default {
+  components: {
+    QusetionEdit
+  },
   name: "Qusetion",
   data() {
     return {
@@ -286,6 +299,11 @@ export default {
           }
         })
         .catch(() => {});
+    },
+    //新增
+    add() {
+      this.$refs.questionEditRef.modal = "add";
+      this.$refs.questionEditRef.dialogVisible = true;
     }
     // 好使
     // formatType(val){
