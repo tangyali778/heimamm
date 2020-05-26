@@ -88,14 +88,75 @@
             <el-form-item>
               <el-button type="primary" @click="search">搜索</el-button>
               <el-button @click="clear">清除</el-button>
-              <el-button type="primary" @click="add">+新增试题</el-button>
+              <el-button type="primary">+新增试题</el-button>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
     </el-card>
     <!-- 列表区域 -->
-    <el-card style="margin-top:15px"></el-card>
+    <el-card style="margin-top:15px">
+      <el-table :data="questionList" border stripe>
+        <el-table-column label="序号" type="index"></el-table-column>
+        <el-table-column label="题目" width="300">
+          <template slot-scope="scope">
+            <span v-html="scope.row.title"></span>
+          </template>
+        </el-table-column>
+        <!-- 方法一 -->
+        <el-table-column label="学科.阶段" :formatter="formatterSubject"></el-table-column>
+        <!-- 方法二 -->
+        <!-- <el-table-column label="学科.阶段">
+          <template slot-scope="scope">
+            <span>{{scope.row.subject_name}}.{{stepObj[scope.row.step]}}</span>
+          </template>
+        </el-table-column>-->
+        <el-table-column label="题型" :formatter="formatterType">
+          <!-- <template slot-scope="scope"> -->
+          <!-- 可以使,简单直接 -->
+          <!-- <span>{{typeObj[scope.row.type]}}</span> -->
+          <!-- 过滤器不好使;过滤器中的this是undefined -->
+          <!-- <span>{{scope.row.type | formatType}}</span> -->
+          <!-- 计算属性不好使;无法传递以及接收参数 -->
+          <!-- <span>{{formatType}}</span> -->
+          <!-- 可以使,使用调用方法的形式,既可以接收参数,this也可以获取到 -->
+          <!-- <span>{{formatType(scope.row.type)}}</span> -->
+          <!-- </template> -->
+        </el-table-column>
+        <el-table-column label="企业" prop="enterprise_name"></el-table-column>
+        <el-table-column label="状态">
+          <template slot-scope="scope">
+            <span
+              :style="{color:scope.row.status===1?'#85ce61':'red'}"
+            >{{scope.row.status===1?'启用':'禁用'}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="访问量" prop="reads"></el-table-column>
+        <el-table-column label="操作" width="280">
+          <template slot-scope="scope">
+            <el-button type="primary">编辑</el-button>
+            <el-button
+              @click="changeStatus(scope.row.id)"
+              :type="scope.row.status===1?'info':'success'"
+            >{{scope.row.status===1?'禁用':'启用'}}</el-button>
+            <el-button type="danger" @click="del(scope.row.id)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页 -->
+      <div style="margin-top:15px;text-align:center">
+        <el-pagination
+          @size-change="sizeChange"
+          @current-change="currentChange"
+          :current-page="page"
+          :page-sizes="[2, 4, 6, 8]"
+          :page-size="limit"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          background
+        ></el-pagination>
+      </div>
+    </el-card>
   </div>
 </template>
 
@@ -172,9 +233,78 @@ export default {
       this.$refs.searchFormRef.resetFields();
       this.search();
     },
-    //新增题库
-    add() {}
+    // 格式化学科.阶段
+    formatterSubject(row) {
+      return `${row.subject_name}.${this.stepObj[row.step]}`;
+    },
+    // 格式化题型
+    formatterType(row) {
+      return this.typeObj[row.type];
+    },
+    //页容量发生变化
+    sizeChange(val) {
+      this.limit = val;
+      this.search();
+    },
+    // 当前页发生变化
+    currentChange(val) {
+      this.page = val;
+      this.getQuestionData();
+    },
+    // 改变状态
+    async changeStatus(id) {
+      const res = await this.$axios.post("/question/status", { id });
+      if (res.data.code == 200) {
+        this.$message({
+          type: "success",
+          message: "更新状态成功"
+        });
+
+        //重新刷新当前页面
+        this.getQuestionData();
+      } else {
+        this.$message.error(res.data.message);
+      }
+    },
+    //删除
+    del(id) {
+      this.$confirm("确定删除该题目吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          const res = await this.$axios.post("/question/remove", { id });
+          if (res.data.code == 200) {
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+
+            //重新刷新第一页数据
+            this.search();
+          }
+        })
+        .catch(() => {});
+    }
+    // 好使
+    // formatType(val){
+    //     return this.typeObj[val]
+    // }
   }
+  // 不好使,里面的this不是指向vue实例
+  // filters:{
+  //     formatType(val){
+  //        return this.typeObj[val]
+  //     }
+  // }
+  //不好使,不能接收参数
+  // computed:{
+  //   formatType(val){
+  //     console.log('这是',val);//这里面的val不是传来的参数是vue实例而且上面也不能写()传递参数不然会以为是方法
+  //     return 'test'
+  //   }
+  // }
 };
 </script>
 
