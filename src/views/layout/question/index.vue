@@ -106,6 +106,8 @@ export default {
     return {
       page: 1, //页码 默认为1
       limit: 2, //页容量
+      questionList: [], //题库列表
+      total: 0, //总条数
       //模型提交给后台的
       searchForm: {
         title: "", //标题名称
@@ -128,6 +130,7 @@ export default {
   created() {
     this.getSubjectData();
     this.getEnterpriseData();
+    this.getQuestionData();
   },
   methods: {
     //获取所有的学科列表
@@ -144,10 +147,31 @@ export default {
         this.enterpriseList = res.data.data.items;
       }
     },
+    //获取的题库列表
+    async getQuestionData() {
+      const res = await this.$axios.get("/question/list", {
+        params: {
+          ...this.searchForm,
+          page: this.page,
+          limit: this.limit
+        }
+      });
+      if (res.data.code == 200) {
+        this.questionList = res.data.data.items;
+        this.total = res.data.data.pagination.total;
+      }
+    },
     //搜索
-    search() {},
+    search() {
+      this.page = 1;
+      this.getQuestionData();
+    },
     //清除
-    clear() {},
+    clear() {
+      // 如果要调用 form 表单的 resetFields 这个方法，需要给 el-form-item 设置 prop
+      this.$refs.searchFormRef.resetFields();
+      this.search();
+    },
     //新增题库
     add() {}
   }
