@@ -53,6 +53,25 @@
             <el-radio v-for="(value, name) in difficultyObj" :key="name" :label="name">{{value}}</el-radio>
           </el-radio-group>
         </el-form-item>
+
+        <hr class="hrMargin" />
+        <el-form-item label="试题标题" prop="title" class="setMargin">
+          <quill-editor :options="{placeholder:'请输入标题....'}" v-model="questionForm.title"></quill-editor>
+        </el-form-item>
+        <hr class="hrMargin" />
+        <el-form-item label="解析视频" prop="video" class="setMargin"></el-form-item>
+        <hr class="hrMargin" />
+        <el-form-item label="答案解析" prop="answer_analyze" class="setMargin">
+          <quill-editor
+            :options="{placeholder:'请输入答案解析....'}"
+            v-model="questionForm.answer_analyze"
+          ></quill-editor>
+        </el-form-item>
+        <hr class="hrMargin" />
+        <el-form-item label="试题备注" prop="remark">
+          <el-input v-model="questionForm.remark"></el-input>
+        </el-form-item>
+
         <el-form-item>
           <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="submit">确 定</el-button>
@@ -64,7 +83,15 @@
 
 <script>
 import { regionData } from "element-china-area-data";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
+
+import { quillEditor } from "vue-quill-editor";
 export default {
+  components: {
+    quillEditor
+  },
   name: "QuestionEdit",
   // 接收从父组件传来的值
   //   props: ['subjectList','enterpriseList'],
@@ -77,8 +104,8 @@ export default {
   },
   data() {
     return {
-      dialogVisible: false,// 控制dialog的显示及隐藏
-      modal: "",// add 新增 edit 修改
+      dialogVisible: false, // 控制dialog的显示及隐藏
+      modal: "", // add 新增 edit 修改
       options: regionData,
       //模型
       questionForm: {
@@ -90,12 +117,12 @@ export default {
         type: "1", //	题型 1单选 、2多选 、3简答
         difficulty: "1", //	题目难度 1简单 、2一般 、3困难
         single_select_answer: "", //	单选题答案
-        multiple_select_answer: "", //多选题答案
+        multiple_select_answer: [], //多选题答案
         short_answer: "", //	简答题答案
         video: "", //	解析视频地址
         answer_analyze: "", //	答案解析
         remark: "", //	答案备注
-        select_options: "" //	选项，介绍，图片介绍
+        select_options: []//	选项，介绍，图片介绍
       },
       rules: {
         subject: [{ required: true, message: "请选择学科", trigger: "change" }],
@@ -107,12 +134,17 @@ export default {
         type: [{ required: true, message: "请选择题型", trigger: "change" }],
         difficulty: [
           { required: true, message: "请选择难度", trigger: "change" }
-        ]
+        ],
+        title: [{ required: true, message: "请输入标题", trigger: "blur" }],
+        answer_analyze: [
+          { required: true, message: "请输入答案解析", trigger: "blur" }
+        ],
+        remark: [{ required: true, message: "请输入备注", trigger: "blur" }]
       }
     };
   },
   methods: {
-      //新增&修改
+    //新增&修改
     submit() {}
   }
 };
@@ -139,6 +171,18 @@ export default {
   }
   .el-select {
     width: 300px;
+  }
+  .hrMargin {
+    margin-bottom: 20px;
+  }
+  .setMargin {
+    .el-form-item__content {
+      margin-left: 0px !important;
+      margin-top: 40px;
+    }
+  }
+  .ql-editor {
+    height: 100px;
   }
 }
 </style>
