@@ -58,8 +58,14 @@
         <el-form-item label="试题标题" prop="title" class="setMargin">
           <quill-editor :options="{placeholder:'请输入标题....'}" v-model="questionForm.title"></quill-editor>
         </el-form-item>
+
+         <el-form-item :label="typeObj[questionForm.type]">
+           <!-- 单选多选简答子组件 -->
+           <question-type :questionForm="questionForm"></question-type>
+        </el-form-item>
+
         <hr class="hrMargin" />
-        <el-form-item label="解析视频" prop="video" class="setMargin"></el-form-item>
+        <el-form-item label="解析视频"></el-form-item>
         <hr class="hrMargin" />
         <el-form-item label="答案解析" prop="answer_analyze" class="setMargin">
           <quill-editor
@@ -88,9 +94,12 @@ import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
 
 import { quillEditor } from "vue-quill-editor";
+
+import questionType from './question-type'
 export default {
   components: {
-    quillEditor
+    quillEditor,
+    questionType
   },
   name: "QuestionEdit",
   // 接收从父组件传来的值
@@ -122,7 +131,28 @@ export default {
         video: "", //	解析视频地址
         answer_analyze: "", //	答案解析
         remark: "", //	答案备注
-        select_options: []//	选项，介绍，图片介绍
+        select_options: [
+           {
+            label: 'A',
+            text: 'splice',
+            image: ""
+        },
+        {
+           label: 'B',
+            text: 'slice',
+            image: ""
+        },
+        {
+            label: 'C',
+            text: 'pop',
+            image: ""
+        },
+        {
+           label: 'D',
+            text: 'shift',
+            image: ""
+        },
+        ]//	选项，介绍，图片介绍
       },
       rules: {
         subject: [{ required: true, message: "请选择学科", trigger: "change" }],
