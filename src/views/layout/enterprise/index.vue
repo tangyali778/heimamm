@@ -43,14 +43,21 @@
         <el-table-column label="操作" width="280">
           <template slot-scope="scope">
             <el-button type="primary" @click="editEnterprise(scope.row)">编辑</el-button>
-            <el-button
+            <!-- <el-button
               @click="changeStatus(scope.row.id)"
               :type="scope.row.status===1?'info':'success'"
+            >{{scope.row.status===1?"禁用":"启用"}}</el-button> -->
+             <el-button
+              @click="changeStatus('/enterprise/status',scope.row.id)"
+              :type="scope.row.status===1?'info':'success'"
             >{{scope.row.status===1?"禁用":"启用"}}</el-button>
-            <el-button @click="deleteEnterprise(scope.row.name,scope.row.id)">删除</el-button>
+            <!-- <el-button @click="deleteEnterprise(scope.row.name,scope.row.id)">删除</el-button> -->
+            <el-button @click="del('/enterprise/remove',scope.row.id)">删除</el-button>
+
           </template>
         </el-table-column>
       </el-table>
+      
       <!-- 分页 -->
       <div style="margin-top:15px;text-align:center">
         <el-pagination
@@ -71,7 +78,11 @@
 <script>
 // 导入子组件
 import EnterpriseEdit from "./enterprise=add=or-update";
+//1.导入混入对象
+import common from '@/mixins/common'
 export default {
+  //2. 在自身组件中进入混入
+  mixins:[common],
   name: "EnterPrise",
   //局部注册
   components: {
@@ -93,7 +104,7 @@ export default {
     };
   },
   methods: {
-    async getEnterPriseData() {
+    async getListData() {
       const res = await this.$axios.get("/enterprise/list", {
         params: {
           ...this.searchForm,
@@ -110,7 +121,7 @@ export default {
     // 点击搜索按鈕
     search() {
       this.page = 1;
-      this.getEnterPriseData();
+      this.getListData();
     },
     //清除
     clear() {
@@ -125,41 +136,41 @@ export default {
     // 当前页变化
     handleCurrentChange(val) {
       this.page = val;
-      this.getEnterPriseData();
+      this.getListData();
     },
     //改变状态
-    async changeStatus(id) {
-      const res = await this.$axios.post("/enterprise/status", { id });
-      if (res.data.code == 200) {
-        //提示
-        this.$message({
-          message: "更改成功",
-          type: "success"
-        });
-        //刷新
-        this.getEnterPriseData();
-      }
-    },
+    // async changeStatus(id) {
+    //   const res = await this.$axios.post("/enterprise/status", { id });
+    //   if (res.data.code == 200) {
+    //     //提示
+    //     this.$message({
+    //       message: "更改成功",
+    //       type: "success"
+    //     });
+    //     //刷新
+    //     this.getListData();
+    //   }
+    // },
     //删除
-    deleteEnterprise(eid, id) {
-      this.$confirm(`确定删除${name}这个企业吗`, "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(async () => {
-          const res = await this.$axios.post("/enterprise/remove", { id });
-          if (res.data.code == 200) {
-            this.$message({
-              type: "success",
-              message: "删除成功!"
-            });
-          }
-          // 重新搜索
-          this.search();
-        })
-        .catch(() => {});
-    },
+    // del(id) {
+    //   this.$confirm(`确定删除这个企业吗`, "提示", {
+    //     confirmButtonText: "确定",
+    //     cancelButtonText: "取消",
+    //     type: "warning"
+    //   })
+    //     .then(async () => {
+    //       const res = await this.$axios.post("/enterprise/remove", { id });
+    //       if (res.data.code == 200) {
+    //         this.$message({
+    //           type: "success",
+    //           message: "删除成功!"
+    //         });
+    //       }
+    //       // 重新搜索
+    //       this.search();
+    //     })
+    //     .catch(() => {});
+    // },
     // 点击新增企业按钮
     add() {
       this.$refs.enterpriseEditRef.modal = "add"; //告诉子组件是新增点过来的不是编辑
@@ -196,7 +207,7 @@ export default {
     }
   },
   created() {
-    this.getEnterPriseData();
+    this.getListData();
   }
 };
 </script>

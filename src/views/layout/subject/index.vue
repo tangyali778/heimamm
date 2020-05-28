@@ -44,11 +44,17 @@
         <el-table-column width="280" label="操作">
           <template slot-scope="scope">
             <el-button type="primary" @click="editSubject(scope.row)">编辑</el-button>
-            <el-button
+            <!-- <el-button
               :type="scope.row.status===1?'info':'success'"
               @click="changeStatus(scope.row.id)"
+            >{{scope.row.status===1?'禁用':'启用'}}</el-button> -->
+            <!-- 3.调用混入的方法 -->
+             <el-button
+              :type="scope.row.status===1?'info':'success'"
+              @click="changeStatus('/subject/status',scope.row.id)"
             >{{scope.row.status===1?'禁用':'启用'}}</el-button>
-            <el-button type="danger" @click="deletSubject(scope.row.id)">删除</el-button>
+            <!-- <el-button type="danger" @click="deletSubject(scope.row.id)">删除</el-button> -->
+            <el-button type="danger" @click="del('/subject/remove',scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -72,7 +78,11 @@
 
 <script>
 import SubjectEdit from "./subject-add-or-update";
+// 1.导入混入对象
+import common from '@/mixins/common'
 export default {
+   //2.在自身组件中进入混入
+  mixins: [common],
   components: {
     SubjectEdit
   },
@@ -93,11 +103,11 @@ export default {
     };
   },
   created() {
-    this.getSubjectData();
+    this.getListData();
   },
   methods: {
     // 获取学科列表
-    async getSubjectData() {
+    async getListData() {
       const res = await this.$axios.get("/subject/list", {
         params: {
           ...this.searchForm,
@@ -114,7 +124,7 @@ export default {
     // 搜索
     search() {
       this.page = 1;
-      this.getSubjectData();
+      this.getListData();
     },
     //清除{}
     clear() {
@@ -123,39 +133,39 @@ export default {
       this.search();
     },
     //改变状态
-    async changeStatus(id) {
-      const res = await this.$axios.post("/subject/status", { id });
-      if (res.data.code == 200) {
-        this.$message({
-          type: "success",
-          message: "更新状态成功"
-        });
-        // 更改成功之后,发送请求显示当前页面数据
-        this.getSubjectData();
-      } else {
-        this.$message.error(res.data.message);
-      }
-    },
+    // async changeStatus(id) {
+    //   const res = await this.$axios.post("/subject/status", { id });
+    //   if (res.data.code == 200) {
+    //     this.$message({
+    //       type: "success",
+    //       message: "更新状态成功"
+    //     });
+    //     // 更改成功之后,发送请求显示当前页面数据
+    //     this.getListData();
+    //   } else {
+    //     this.$message.error(res.data.message);
+    //   }
+    // },
     //删除
-    deletSubject(id) {
-      this.$confirm("你确定删除吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(async () => {
-          const res = await this.$axios.post("/subject/remove", { id });
-          if (res.data.code == 200) {
-            this.$message({
-              type: "success",
-              message: "删除成功"
-            });
-            // 删除成功之后,发送请求显示第一页的数据
-            this.search();
-          }
-        })
-        .catch(() => {});
-    },
+    // del(id) {
+    //   this.$confirm("你确定删除吗?", "提示", {
+    //     confirmButtonText: "确定",
+    //     cancelButtonText: "取消",
+    //     type: "warning"
+    //   })
+    //     .then(async () => {
+    //       const res = await this.$axios.post("/subject/remove", { id });
+    //       if (res.data.code == 200) {
+    //         this.$message({
+    //           type: "success",
+    //           message: "删除成功"
+    //         });
+    //         // 删除成功之后,发送请求显示第一页的数据
+    //         this.search();
+    //       }
+    //     })
+    //     .catch(() => {});
+    // },
     // 页容量改变
     sizeChange(val) {
       this.limit = val;
@@ -164,7 +174,7 @@ export default {
     //当前页改变
     currentChange(val) {
       this.page = val;
-      this.getSubjectData();
+      this.getListData();
     },
     // 新增学科
     add() {

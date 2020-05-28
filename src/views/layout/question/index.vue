@@ -135,11 +135,17 @@
         <el-table-column label="操作" width="280">
           <template slot-scope="scope">
             <el-button type="primary">编辑</el-button>
-            <el-button
+            <!-- <el-button
               @click="changeStatus(scope.row.id)"
               :type="scope.row.status===1?'info':'success'"
+            >{{scope.row.status===1?'禁用':'启用'}}</el-button> -->
+            <!-- 3.调用混入对象中的方法 -->
+             <el-button
+              @click="changeStatus('/question/status',scope.row.id)"
+              :type="scope.row.status===1?'info':'success'"
             >{{scope.row.status===1?'禁用':'启用'}}</el-button>
-            <el-button type="danger" @click="del(scope.row.id)">删除</el-button>
+            <!-- <el-button type="danger" @click="del(scope.row.id)">删除</el-button> -->
+             <el-button type="danger" @click="del('/question/remove',scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -171,7 +177,11 @@
 
 <script>
 import QusetionEdit from "./question-add-or-update";
+//1.导入混入对象
+import common from "@/mixins/common"
 export default {
+  //2. 在自身组件中进入混入
+  mixins:[common],
   components: {
     QusetionEdit
   },
@@ -204,7 +214,7 @@ export default {
   created() {
     this.getSubjectData();
     this.getEnterpriseData();
-    this.getQuestionData();
+    this.getListData();
   },
   methods: {
     //获取所有的学科列表
@@ -222,7 +232,7 @@ export default {
       }
     },
     //获取的题库列表
-    async getQuestionData() {
+    async getListData() {
       const res = await this.$axios.get("/question/list", {
         params: {
           ...this.searchForm,
@@ -238,7 +248,7 @@ export default {
     //搜索
     search() {
       this.page = 1;
-      this.getQuestionData();
+      this.getListData();
     },
     //清除
     clear() {
@@ -262,44 +272,44 @@ export default {
     // 当前页发生变化
     currentChange(val) {
       this.page = val;
-      this.getQuestionData();
+      this.getListData();
     },
     // 改变状态
-    async changeStatus(id) {
-      const res = await this.$axios.post("/question/status", { id });
-      if (res.data.code == 200) {
-        this.$message({
-          type: "success",
-          message: "更新状态成功"
-        });
+    // async changeStatus(id) {
+    //   const res = await this.$axios.post("/question/status", { id });
+    //   if (res.data.code == 200) {
+    //     this.$message({
+    //       type: "success",
+    //       message: "更新状态成功"
+    //     });
 
-        //重新刷新当前页面
-        this.getQuestionData();
-      } else {
-        this.$message.error(res.data.message);
-      }
-    },
+    //     //重新刷新当前页面
+    //     this.geListData();
+    //   } else {
+    //     this.$message.error(res.data.message);
+    //   }
+    // },
     //删除
-    del(id) {
-      this.$confirm("确定删除该题目吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(async () => {
-          const res = await this.$axios.post("/question/remove", { id });
-          if (res.data.code == 200) {
-            this.$message({
-              type: "success",
-              message: "删除成功!"
-            });
+    // del(id) {
+    //   this.$confirm("确定删除该题目吗?", "提示", {
+    //     confirmButtonText: "确定",
+    //     cancelButtonText: "取消",
+    //     type: "warning"
+    //   })
+    //     .then(async () => {
+    //       const res = await this.$axios.post("/question/remove", { id });
+    //       if (res.data.code == 200) {
+    //         this.$message({
+    //           type: "success",
+    //           message: "删除成功!"
+    //         });
 
-            //重新刷新第一页数据
-            this.search();
-          }
-        })
-        .catch(() => {});
-    },
+    //         //重新刷新第一页数据
+    //         this.search();
+    //       }
+    //     })
+    //     .catch(() => {});
+    // },
     //新增
     add() {
       this.$refs.questionEditRef.modal = "add";

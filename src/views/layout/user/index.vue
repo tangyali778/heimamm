@@ -45,11 +45,17 @@
         <el-table-column label="操作" width="280">
           <template slot-scope="scope">
             <el-button type="primary" @click="editUser(scope.row)">编辑</el-button>
-            <el-button
+            <!-- <el-button
               :type="scope.row.status===0? 'success':'info'"
               @click="changeStatus(scope.row.id)"
+            >{{scope.row.status===0?'启用':'禁用'}}</el-button>-->
+            <!-- 3.调用混入的方法 -->
+            <el-button
+              :type="scope.row.status===0? 'success':'info'"
+              @click="changeStatus('/user/status',scope.row.id)"
             >{{scope.row.status===0?'启用':'禁用'}}</el-button>
-            <el-button @click="deleteUser(scope.row.username,scope.row.id)">删除</el-button>
+            <!-- <el-button @click="deleteUser(scope.row.username,scope.row.id)">删除</el-button> -->
+            <el-button @click="del('/user/remove',scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -76,7 +82,11 @@
 
 <script>
 import UserEdit from "./user-add-or-update";
+// 1.导入混入对象
+import common from "@/mixins/common";
 export default {
+  //2.在自身组件中进入混入
+  mixins: [common],
   components: {
     UserEdit
   },
@@ -117,7 +127,7 @@ export default {
   },
   methods: {
     //先发送请求得到用户信息
-    async getUserData() {
+    async getListData() {
       const res = await this.$axios.get("/user/list", {
         params: {
           // 这个就相当于...this.searchForm
@@ -139,7 +149,7 @@ export default {
     search() {
       //搜索要显示第一页的数据
       this.page = 1;
-      this.getUserData();
+      this.getListData();
     },
     // 清空方法
     clear() {
@@ -160,47 +170,46 @@ export default {
     // 当前页改变
     handleCurrentChange(val) {
       this.page = val; //当前页码改变之后,是从选中的那个页码开始发送请求
-      this.getUserData();
+      this.getListData();
     },
     //改变当前行的用户状态
-    async changeStatus(id) {
-      const res = await this.$axios.post("/user/status", { id });
-      //console.log(res);
+    // async changeStatus(id) {
+    //   const res = await this.$axios.post("/user/status", { id });
+    //   //console.log(res);
 
-      if (res.data.code == 200) {
-        this.$message({
-          message: "更改成功",
-          type: "success"
-        });
-        //刷新
-        this.getUserData();
-      }
-    },
+    //   if (res.data.code == 200) {
+    //     this.$message({
+    //       message: "更改成功",
+    //       type: "success"
+    //     });
+    //     //刷新
+    //     this.getListData();
+    //   }
+    // },
     // 删除该用户
-    deleteUser(username, id) {
-      this.$confirm(`确定删除${username}该用户吗?`, "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(async () => {
-          const res = await this.$axios.post("/user/remove", { id });
-          console.log(res);
-          // 成功就弹出提示框
-          if (res.data.code == 200) {
-            this.$message({
-              type: "success",
-              message: "删除成功!"
-            });
-            //  并且要重新查询,展示第一页的数据内容
-            this.search();
-          }
-        })
-        .catch(() => {});
-    },
+    // del(username, id) {
+    //   this.$confirm(`确定删除${username}该用户吗?`, "提示", {
+    //     confirmButtonText: "确定",
+    //     cancelButtonText: "取消",
+    //     type: "warning"
+    //   })
+    //     .then(async () => {
+    //       const res = await this.$axios.post("/user/remove", { id });
+    //       console.log(res);
+    //       // 成功就弹出提示框
+    //       if (res.data.code == 200) {
+    //         this.$message({
+    //           type: "success",
+    //           message: "删除成功!"
+    //         });
+    //         //  并且要重新查询,展示第一页的数据内容
+    //         this.search();
+    //       }
+    //     })
+    //     .catch(() => {});
+    // },
     //新增用户
     add() {
-      
       // 点击新增的时候子组件user-add-or-update.vue组件展示
       this.$refs.userEditRef.dialogVisible = true;
 
@@ -208,18 +217,18 @@ export default {
       //法1.用refs方法传值子组件
       //  this.$refs.userEditRef.modal='add'
       //法2:用props的方法传值子组件
-       this.modal = "add";
+      this.modal = "add";
 
       // 解决点击新增时在表单上输入一些内容按x或者取消后,再点击新增时,form表单内容还存在上一次输入的内容
       //方法1:点击新增之前先把这个form内容全部清空
-       this.$refs.userEditRef.addForm = {
-          username: "", // 用户名
-          email: "", // 邮箱
-          phone: "", // 手机号
-          role_id: "", // 角色 1：超级管理员 2：管理员 3：老师 4：学生
-          status: "", // 状态 1：启用 0：禁用
-          remark: "" // 备注
-        };
+      this.$refs.userEditRef.addForm = {
+        username: "", // 用户名
+        email: "", // 邮箱
+        phone: "", // 手机号
+        role_id: "", // 角色 1：超级管理员 2：管理员 3：老师 4：学生
+        status: "", // 状态 1：启用 0：禁用
+        remark: "" // 备注
+      };
       // 方法1:再把校验清空
       // this.$nextTick(()=>{
       //   this.$refs.userEditRef.$refs.addFormRef.clearValidate()
@@ -238,21 +247,21 @@ export default {
     // 修改用户
     editUser(row) {
       this.modal = "edit";
-     //console.log(row);//这里的row就是点击编辑的那行的数据(是个对象)
+      //console.log(row);//这里的row就是点击编辑的那行的数据(是个对象)
       this.$refs.userEditRef.dialogVisible = true;
       //this.$refs.userEditRef.addForm = row 这种是浅拷贝,一改就把那行本来的数据也改了,所以不行
       //this.$refs.userEditRef.addForm = {...row }//深拷贝第一种,但是这种只能拷贝一层
       this.$refs.userEditRef.addForm = JSON.parse(JSON.stringify(row)); //深拷贝第二种,无论对象的层次有多深都能进行拷贝
-      
-    //  this.$nextTick(() => {
-    //     this.$refs.userEditRef.$refs.addFormRef.clearValidate()
-    //  });
+
+      //  this.$nextTick(() => {
+      //     this.$refs.userEditRef.$refs.addFormRef.clearValidate()
+      //  });
     }
   },
 
   created() {
     // 获取用户列表数据,用户内容展示
-    this.getUserData();
+    this.getListData();
   }
 };
 </script>
