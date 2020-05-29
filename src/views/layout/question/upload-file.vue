@@ -8,9 +8,15 @@
       :on-success="handleAvatarSuccess"
       :before-upload="beforeAvatarUpload"
     >
-      <!-- <img v-if="imageUrl" :src="imageUrl" class="avatar"> -->
-      <i class="el-icon-plus avatar-uploader-icon"></i>
-    </el-upload>
+    <div v-if="type==='video'">
+       <video v-if="value" :src="BASE_URL+'/'+value" controls class="avatar"></video>
+      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+    </div>
+     <div v-else>
+       <img v-if="value" :src="BASE_URL+'/'+value" class="avatar"/>
+      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+    </div>
+   </el-upload>
   </div>
 </template>
 
@@ -21,7 +27,8 @@ export default {
     type: {
       type: String,//这里表示type类型是字符串
       default: "image"//这个代表接受父组件传来的type的值,如果没有传递参数默认就是image
-    }
+    },
+    value:String
   },
   data() {
     return {
@@ -29,7 +36,9 @@ export default {
     };
   },
   methods: {
-    handleAvatarSuccess() {},
+    handleAvatarSuccess(res) {
+           this.$emit('input',res.data.url)
+    },
     beforeAvatarUpload(file) {
       if (this.type == "video") {
         const isVideo = file.type === "video/mp4";

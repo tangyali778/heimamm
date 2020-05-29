@@ -56,23 +56,32 @@
 
         <hr class="hrMargin" />
         <el-form-item label="试题标题" prop="title" class="setMargin">
-          <quill-editor :options="{placeholder:'请输入标题....'}" v-model="questionForm.title"></quill-editor>
+          <quill-editor
+            :options="{placeholder:'请输入标题....'}"
+            v-model="questionForm.title"
+            @change="onEditorChange('title')"
+          ></quill-editor>
         </el-form-item>
 
-         <el-form-item :label="typeObj[questionForm.type]">
-           <!-- 单选多选简答子组件 -->
-           <question-type :questionForm="questionForm"></question-type>
+        <el-form-item
+          :label="typeObj[questionForm.type]"
+          :prop="validateQuestionTypeObj[questionForm.type]"
+        >
+          <!-- 单选多选简答子组件 -->
+          <question-type :questionForm="questionForm" @childChange="onChildChange"></question-type>
         </el-form-item>
 
         <hr class="hrMargin" />
         <el-form-item label="解析视频">
-          <upload-file type="video"></upload-file>
+          <!-- 把 questionForm中的video的值传递给子组件-->
+          <upload-file type="video" v-model="questionForm.video"></upload-file>
         </el-form-item>
         <hr class="hrMargin" />
         <el-form-item label="答案解析" prop="answer_analyze" class="setMargin">
           <quill-editor
             :options="{placeholder:'请输入答案解析....'}"
             v-model="questionForm.answer_analyze"
+            @change="onEditorChange('answer_analyze')"
           ></quill-editor>
         </el-form-item>
         <hr class="hrMargin" />
@@ -97,7 +106,7 @@ import "quill/dist/quill.bubble.css";
 
 import { quillEditor } from "vue-quill-editor";
 //导入子组件题型组件
-import questionType from './question-type'
+import questionType from "./question-type";
 // 导入子组件上传组件
 import UploadFile from "./upload-file";
 export default {
@@ -118,6 +127,12 @@ export default {
   },
   data() {
     return {
+      //校验题型的时候prop要看情况看是单选还是多选还是简答
+      validateQuestionTypeObj: {
+        1: "single_select_answer",
+        2: "multiple_select_answer",
+        3: "short_answer"
+      },
       dialogVisible: false, // 控制dialog的显示及隐藏
       modal: "", // add 新增 edit 修改
       options: regionData,
@@ -137,27 +152,27 @@ export default {
         answer_analyze: "", //	答案解析
         remark: "", //	答案备注
         select_options: [
-           {
-            label: 'A',
-            text: 'splice',
+          {
+            label: "A",
+            text: "splice",
             image: ""
-        },
-        {
-           label: 'B',
-            text: 'slice',
+          },
+          {
+            label: "B",
+            text: "slice",
             image: ""
-        },
-        {
-            label: 'C',
-            text: 'pop',
+          },
+          {
+            label: "C",
+            text: "pop",
             image: ""
-        },
-        {
-           label: 'D',
-            text: 'shift',
+          },
+          {
+            label: "D",
+            text: "shift",
             image: ""
-        },
-        ]//	选项，介绍，图片介绍
+          }
+        ] //	选项，介绍，图片介绍
       },
       rules: {
         subject: [{ required: true, message: "请选择学科", trigger: "change" }],
@@ -170,17 +185,41 @@ export default {
         difficulty: [
           { required: true, message: "请选择难度", trigger: "change" }
         ],
-        title: [{ required: true, message: "请输入标题", trigger: "blur" }],
+        title: [{ required: true, message: "请输入标题", trigger: "change" }],
         answer_analyze: [
-          { required: true, message: "请输入答案解析", trigger: "blur" }
+          { required: true, message: "请输入答案解析", trigger: "change" }
         ],
-        remark: [{ required: true, message: "请输入备注", trigger: "blur" }]
+        remark: [{ required: true, message: "请输入备注", trigger: "change" }],
+        single_select_answer: [
+          { required: true, message: "请输入单选答案", trigger: "blur" }
+        ],
+        multiple_select_answer: [
+          { required: true, message: "请输入多选答案", trigger: "blur" }
+        ],
+        short_answer: [
+          { required: true, message: "请输入简答题答案", trigger: "change" }
+        ]
       }
     };
   },
   methods: {
+    // 对富文本编辑器中字段进行校验(试题标题跟答案解析)
+    onEditorChange(value) {
+      // 一改变就做校验
+      //validateField对对部分表单字段进行校验的方法
+      this.$refs.questionFormRef.validateField(value);
+    },
+    // 对QuestionType子组件中的 单选或多选或简答及时校验
+    onChildChange() {
+      //一改变就校验
+      this.$refs.questionFormRef.validateField(['single_select_answer','multiple_select_answer','short_answer']);
+    },
     //新增&修改
-    submit() {}
+    submit() {
+      this.$refs.questionFormRef.validate(async valid => {
+        if (!valid) return;
+      });
+    }
   }
 };
 </script>
