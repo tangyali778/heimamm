@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="questionType">
     <!-- 选中单选的时候 -->
     <div v-if="questionForm.type==1">
       <div v-for="(item, index) in questionForm.select_options" :key="index" class="item">
@@ -49,8 +49,11 @@ export default {
 </script>
 
 <style lang='less'>
-.item {
-  display: flex;
-  align-items: center;
+.questionType {
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 </style>

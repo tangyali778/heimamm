@@ -138,14 +138,14 @@
             <!-- <el-button
               @click="changeStatus(scope.row.id)"
               :type="scope.row.status===1?'info':'success'"
-            >{{scope.row.status===1?'禁用':'启用'}}</el-button> -->
+            >{{scope.row.status===1?'禁用':'启用'}}</el-button>-->
             <!-- 3.调用混入对象中的方法 -->
-             <el-button
+            <el-button
               @click="changeStatus('/question/status',scope.row.id)"
               :type="scope.row.status===1?'info':'success'"
             >{{scope.row.status===1?'禁用':'启用'}}</el-button>
             <!-- <el-button type="danger" @click="del(scope.row.id)">删除</el-button> -->
-             <el-button type="danger" @click="del('/question/remove',scope.row.id)">删除</el-button>
+            <el-button type="danger" @click="del('/question/remove',scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -178,10 +178,10 @@
 <script>
 import QusetionEdit from "./question-add-or-update";
 //1.导入混入对象
-import common from "@/mixins/common"
+import common from "@/mixins/common";
 export default {
   //2. 在自身组件中进入混入
-  mixins:[common],
+  mixins: [common],
   components: {
     QusetionEdit
   },
@@ -315,8 +315,8 @@ export default {
       this.$refs.questionEditRef.modal = "add";
       this.$refs.questionEditRef.dialogVisible = true;
       // 点击新增的时候新增&编辑组件就要清空questionForm表单
-      this.$refs.questionEditRef.questionForm={
-            title: "", //	标题
+      this.$refs.questionEditRef.questionForm = {
+        title: "", //	标题
         subject: "", //		学科id标识
         step: "", //阶段1、初级 2、中级 3、高级
         enterprise: "", //	企业id标识
@@ -351,15 +351,27 @@ export default {
             image: ""
           }
         ] //	选项，介绍，图片介绍
-      }
-     
+      };
     },
     //编辑
-    editQuestion(row){
+    editQuestion(row) {
       this.$refs.questionEditRef.modal = "edit";
       this.$refs.questionEditRef.dialogVisible = true;
-      //深拷贝
-      this.$refs.questionEditRef.questionForm=JSON.parse(JSON.stringify(row))
+      //深拷贝,把点编辑的那行的数据拷贝给新增&编辑组件的questionForm,那这样一点编辑这个questionForm就有值
+      // 但是有几个显示不出来比如城市(要变成数组才行),题型,难度,阶段(因为编辑的那行返回的数据这是三个都是数字,所以把他们的value变成数字就好)
+      this.$refs.questionEditRef.questionForm = JSON.parse(JSON.stringify(row));
+      if (row.city) {
+        // 要把返回数据的变成数组
+         this.$refs.questionEditRef.questionForm.city = row.city.split(",");
+      }else{
+         this.$refs.questionEditRef.questionForm.city = []
+      }
+
+      if (row.multiple_select_answer) {
+         this.$refs.questionEditRef.questionForm.multiple_select_answer=row.multiple_select_answer.split(',')
+      }else{
+         this.$refs.questionEditRef.questionForm.multiple_select_answer=[]
+      }
     }
     // 好使
     // formatType(val){

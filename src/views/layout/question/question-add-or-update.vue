@@ -22,7 +22,7 @@
         </el-form-item>
         <el-form-item label="阶段" prop="step">
           <el-select v-model="questionForm.step" placeholder="请选择阶段">
-            <el-option v-for="(value, name) in stepObj" :key="name" :label="value" :value="name"></el-option>
+            <el-option v-for="(value, name) in stepObj" :key="name" :label="value" :value="+name"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="企业" prop="enterprise">
@@ -45,12 +45,12 @@
         </el-form-item>
         <el-form-item label="题型" prop="type">
           <el-radio-group v-model="questionForm.type">
-            <el-radio v-for="(value, name) in typeObj" :key="name" :label="name">{{value}}</el-radio>
+            <el-radio v-for="(value, name) in typeObj" :key="name" :label="+name">{{value}}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="难度" prop="difficulty">
           <el-radio-group v-model="questionForm.difficulty">
-            <el-radio v-for="(value, name) in difficultyObj" :key="name" :label="name">{{value}}</el-radio>
+            <el-radio v-for="(value, name) in difficultyObj" :key="name" :label="+name">{{value}}</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -142,7 +142,7 @@ export default {
         subject: "", //		学科id标识
         step: "", //阶段1、初级 2、中级 3、高级
         enterprise: "", //	企业id标识
-        city: "", //		[省、市、区县]
+        city: [], //		[省、市、区县]
         type: "1", //	题型 1单选 、2多选 、3简答
         difficulty: "1", //	题目难度 1简单 、2一般 、3困难
         single_select_answer: "", //	单选题答案
@@ -227,6 +227,8 @@ export default {
         if (this.modal == "add") {
           res = await this.$axios.post("/question/add", this.questionForm);
         } else {
+          // 发送编辑请求的时候又要是字符串
+          this.questionForm.city = this.questionForm.city.join(",");
           res = await this.$axios.post("/question/edit", this.questionForm);
         }
 
@@ -239,7 +241,7 @@ export default {
           //把当前对话框关掉
           this.dialogVisible = false;
           // 调用父组件search方法
-          this.$parent.search()
+          this.$parent.search();
         } else {
           this.$message.error(res.data.message);
         }
