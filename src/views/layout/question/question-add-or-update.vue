@@ -65,7 +65,9 @@
         </el-form-item>
 
         <hr class="hrMargin" />
-        <el-form-item label="解析视频"></el-form-item>
+        <el-form-item label="解析视频">
+          <upload-file type="video"></upload-file>
+        </el-form-item>
         <hr class="hrMargin" />
         <el-form-item label="答案解析" prop="answer_analyze" class="setMargin">
           <quill-editor
@@ -94,12 +96,15 @@ import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
 
 import { quillEditor } from "vue-quill-editor";
-
+//导入子组件题型组件
 import questionType from './question-type'
+// 导入子组件上传组件
+import UploadFile from "./upload-file";
 export default {
   components: {
     quillEditor,
-    questionType
+    questionType,
+    UploadFile
   },
   name: "QuestionEdit",
   // 接收从父组件传来的值

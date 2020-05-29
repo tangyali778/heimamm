@@ -6,7 +6,9 @@
         <!-- 单选radio -->
         <el-radio v-model="questionForm.single_select_answer" :label="item.label">{{item.label}}</el-radio>
         <!-- input -->
-        <el-input v-model="item.text"></el-input>
+        <el-input v-model="item.text" style="margin-right:15px"></el-input>
+        <!-- image -->
+        <upload-file></upload-file>
       </div>
     </div>
     <!-- 选中多选的时候 -->
@@ -15,7 +17,9 @@
         <!-- 多选checkbox -->
         <el-checkbox v-model="questionForm.multiple_select_answer" :label="item.label"></el-checkbox>
         <!-- input -->
-        <el-input v-model="item.text" style="margin-left:15px"></el-input>
+        <el-input v-model="item.text" style="margin-left:15px;margin-right:15px"></el-input>
+         <!-- image -->
+        <upload-file></upload-file>
       </div>
     </div>
     <!-- 选中简答的时候 -->
@@ -26,8 +30,14 @@
 </template>
 
 <script>
+// 导入子组件上传组件
+import UploadFile from "./upload-file";
 export default {
   name: "QuestionType",
+  // 注册上传组件
+  components: {
+    UploadFile
+  },
   props: ["questionForm"],
   data() {
     return {};
