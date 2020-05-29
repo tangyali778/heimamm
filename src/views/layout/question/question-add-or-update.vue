@@ -212,13 +212,49 @@ export default {
     // 对QuestionType子组件中的 单选或多选或简答及时校验
     onChildChange() {
       //一改变就校验
-      this.$refs.questionFormRef.validateField(['single_select_answer','multiple_select_answer','short_answer']);
+      this.$refs.questionFormRef.validateField([
+        "single_select_answer",
+        "multiple_select_answer",
+        "short_answer"
+      ]);
     },
     //新增&修改
     submit() {
       this.$refs.questionFormRef.validate(async valid => {
         if (!valid) return;
+
+        let res = "";
+        if (this.modal == "add") {
+          res = await this.$axios.post("/question/add", this.questionForm);
+        } else {
+          res = await this.$axios.post("/question/edit", this.questionForm);
+        }
+
+        if (res.data.code == 200) {
+          //提示
+          this.$message({
+            type: "success",
+            message: this.modal === "add" ? "新增成功" : "编辑成功"
+          });
+          //把当前对话框关掉
+          this.dialogVisible = false;
+          // 调用父组件search方法
+          this.$parent.search()
+        } else {
+          this.$message.error(res.data.message);
+        }
       });
+    }
+  },
+  //监听器
+  watch: {
+    dialogVisible(newValue) {
+      //当dialogVisible是true的时候
+      if (newValue) {
+        this.$nextTick(() => {
+          this.$refs.questionFormRef.clearValidate(); //清空校验
+        });
+      }
     }
   }
 };

@@ -134,7 +134,7 @@
         <el-table-column label="访问量" prop="reads"></el-table-column>
         <el-table-column label="操作" width="280">
           <template slot-scope="scope">
-            <el-button type="primary">编辑</el-button>
+            <el-button type="primary" @click="editQuestion(scope.row)">编辑</el-button>
             <!-- <el-button
               @click="changeStatus(scope.row.id)"
               :type="scope.row.status===1?'info':'success'"
@@ -314,6 +314,52 @@ export default {
     add() {
       this.$refs.questionEditRef.modal = "add";
       this.$refs.questionEditRef.dialogVisible = true;
+      // 点击新增的时候新增&编辑组件就要清空questionForm表单
+      this.$refs.questionEditRef.questionForm={
+            title: "", //	标题
+        subject: "", //		学科id标识
+        step: "", //阶段1、初级 2、中级 3、高级
+        enterprise: "", //	企业id标识
+        city: "", //		[省、市、区县]
+        type: "1", //	题型 1单选 、2多选 、3简答
+        difficulty: "1", //	题目难度 1简单 、2一般 、3困难
+        single_select_answer: "", //	单选题答案
+        multiple_select_answer: [], //多选题答案
+        short_answer: "", //	简答题答案
+        video: "", //	解析视频地址
+        answer_analyze: "", //	答案解析
+        remark: "", //	答案备注
+        select_options: [
+          {
+            label: "A",
+            text: "splice",
+            image: ""
+          },
+          {
+            label: "B",
+            text: "slice",
+            image: ""
+          },
+          {
+            label: "C",
+            text: "pop",
+            image: ""
+          },
+          {
+            label: "D",
+            text: "shift",
+            image: ""
+          }
+        ] //	选项，介绍，图片介绍
+      }
+     
+    },
+    //编辑
+    editQuestion(row){
+      this.$refs.questionEditRef.modal = "edit";
+      this.$refs.questionEditRef.dialogVisible = true;
+      //深拷贝
+      this.$refs.questionEditRef.questionForm=JSON.parse(JSON.stringify(row))
     }
     // 好使
     // formatType(val){
