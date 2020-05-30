@@ -9,7 +9,8 @@
 
       <div class="right">
         <img :src="avatar" alt />
-        <span class="name">{{username}},您好</span>
+        <!-- <span class="name">{{username}},您好</span> -->
+        <span class="name">{{$store.getters.getInfo.username}},您好</span>
         <el-button size="mini" type="primary" @click="logout">退出</el-button>
       </div>
     </el-header>
@@ -81,6 +82,9 @@ export default {
       if (res.data.code == 200) {
         this.avatar = process.env.VUE_APP_BASEURL + "/" + res.data.data.avatar;
         this.username = res.data.data.username;
+
+        //把获取到的用户信息存到仓库
+        this.$store.commit('setInfo',res.data.data)
       }
     },
     // 退出

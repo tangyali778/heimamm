@@ -243,7 +243,7 @@ export default {
             type: "success"
           });
           //  请求成功后要把当前窗口消失
-          this.dialogVisible = true;
+          this.dialogVisible = false;
         } else {
           this.$message.error(res.data.message);
         }
