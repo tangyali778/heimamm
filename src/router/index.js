@@ -131,7 +131,7 @@ router.beforeEach((to, from, next) => {
 //全局后置钩子
 router.afterEach((to) => {
     //console.log(to); //这里的to就是上面每一个路由们
-
+    // 进入页面之后要做的事情
     document.title = to.meta.title || '黑马面面'
 })
 
