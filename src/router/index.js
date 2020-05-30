@@ -22,21 +22,82 @@ import Subject from "@/views/layout/subject";
 
 
 const router = new VueRouter({
-    routes: [
-        {
+    routes: [{
             path: '/login',
-            component: Login
+            component: Login,
+            meta: {
+                title: '登录'
+            }
+
         },
         {
             path: '/layout',
             component: Layout,
-            children: [
-                {path:'welcome',component:Welcome},
-                {path:'chart',component:Chart},
-                {path:'user',component:User},
-                {path:'enterprise',component:Enterprise},
-                {path:'question',component:Question},
-                {path:'subject',component:Subject},
+            meta: {
+                roles: ['超级管理员', '管理员', '老师', '学生']
+            },
+            children: [{
+                    path: 'welcome',
+                    component: Welcome,
+                    //借助路由元信息,对这条路径做个具体的描述
+                    meta: {
+                        roles: ['超级管理员', '管理员', '老师', '学生'],
+                        icon: 'el-icon-date',
+                        fullPath: '/layout/welcome',
+                        title: '个人信息'
+                    },
+                },
+                {
+                    path: 'chart',
+                    component: Chart,
+                    meta: {
+                        roles: ['超级管理员', '管理员', '老师'],
+                        icon: 'el-icon-pie-chart',
+                        fullPath: '/layout/chart',
+                        title: '数据预览'
+                    },
+                },
+                {
+                    path: 'user',
+                    component: User,
+                    meta: {
+                        roles: ['超级管理员', '管理员', '老师'],
+                        icon: 'el-icon-user',
+                        fullPath: '/layout/user',
+                        title: '用户列表'
+                    },
+                },
+                {
+                    path: 'enterprise',
+                    component: Enterprise,
+                    meta: {
+                        roles: ['超级管理员', '管理员', '老师'],
+                        icon: 'el-icon-office-building',
+                        fullPath: '/layout/enterprise',
+                        title: '企业列表'
+                    },
+                },
+                {
+                    path: 'question',
+                    component: Question,
+                    meta: {
+                        roles: ['超级管理员', '管理员', '老师', '学生'],
+                        icon: 'el-icon-edit-outline',
+                        fullPath: '/layout/question',
+                        title: '题库列表'
+                    },
+                },
+                {
+                    path: 'subject',
+                    component: Subject,
+                    meta: {
+                        roles: ['超级管理员', '管理员', '老师'],
+                        icon: 'el-icon-notebook-2',
+                        fullPath: '/layout/subject',
+                        title: '学科列表'
+
+                    },
+                },
             ]
         },
         {
@@ -66,6 +127,12 @@ router.beforeEach((to, from, next) => {
         }
     }
 
+})
+//全局后置钩子
+router.afterEach((to) => {
+    //console.log(to); //这里的to就是上面每一个路由们
+
+    document.title = to.meta.title || '黑马面面'
 })
 
 export default router;

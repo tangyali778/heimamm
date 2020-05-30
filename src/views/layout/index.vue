@@ -23,7 +23,18 @@
           :collapse="isCollapse"
           router
         >
-          <el-menu-item index="/layout/welcome">
+          <!-- 遍历路由管理者里面的layout路由下有多少个嵌套路由,菜单由这个嵌套路由决定有多少个
+          根据身份的不同就有展示不一样多的路由 -->
+          <el-menu-item
+            v-for="(item, index) in $router.options.routes[1].children"
+            :key="index"
+            :index="item.meta.fullPath"
+            v-show="item.meta.roles.includes($store.getters.getInfo.role)"
+          >
+            <i :class="item.meta.icon"></i>
+            <span slot="title">{{item.meta.title}}</span>
+          </el-menu-item>
+          <!-- <el-menu-item index="/layout/welcome">
             <i class="el-icon-date"></i>
             <span slot="title">个人信息</span>
           </el-menu-item>
@@ -46,7 +57,7 @@
           <el-menu-item index="/layout/subject">
             <i class="el-icon-notebook-2"></i>
             <span slot="title">学科列表</span>
-          </el-menu-item>
+          </el-menu-item>-->
         </el-menu>
       </el-aside>
       <el-main style="background-color: #e8e9ec">
@@ -84,7 +95,7 @@ export default {
         this.username = res.data.data.username;
 
         //把获取到的用户信息存到仓库
-        this.$store.commit('setInfo',res.data.data)
+        this.$store.commit("setInfo", res.data.data);
       }
     },
     // 退出
@@ -110,6 +121,7 @@ export default {
   created() {
     this.getUserData();
     this.defaultActive = this.$route.fullPath;
+    // console.log(this.$router);
   }
   //法2:从这里修改登录之后默认显示user页面
   // created() {
