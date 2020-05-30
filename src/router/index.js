@@ -9,14 +9,25 @@ import {
 } from '@/ultils/token'
 
 // login文件夹下是index.js.所以下面导入的时候选到文件夹这里就行了,会自动选中index.js文件
-import Login from "@/views/login";
-import Layout from "@/views/layout";
-import Welcome from "@/views/layout/welcome";
-import Chart from "@/views/layout/chart";
-import User from "@/views/layout/user";
-import Enterprise from "@/views/layout/enterprise";
-import Question from "@/views/layout/question";
-import Subject from "@/views/layout/subject";
+// import Login from "@/views/login";
+// import Layout from "@/views/layout";
+// import Welcome from "@/views/layout/welcome";
+// import Chart from "@/views/layout/chart";
+// import User from "@/views/layout/user";
+// import Enterprise from "@/views/layout/enterprise";
+// import Question from "@/views/layout/question";
+// import Subject from "@/views/layout/subject";
+
+//路由懒加载,当路由被访问的时候才加载对应组件,这样就更加高效了
+// 到时候webpack打包的时候是在一个一个js里面的
+const Login = () => import('@/views/login')
+const Layout = () => import('@/views/layout')
+const Welcome = () => import('@/views/layout/welcome')
+const Chart = () => import('@/views/layout/chart')
+const User = () => import('@/views/layout/user')
+const Enterprise = () => import('@/views/layout/enterprise')
+const Question = () => import('@/views/layout/question')
+const Subject = () => import('@/views/layout/subject')
 
 
 
