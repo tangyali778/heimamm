@@ -321,8 +321,8 @@ export default {
         step: "", //阶段1、初级 2、中级 3、高级
         enterprise: "", //	企业id标识
         city: "", //		[省、市、区县]
-        type: "1", //	题型 1单选 、2多选 、3简答
-        difficulty: "1", //	题目难度 1简单 、2一般 、3困难
+        type: 1, //	题型 1单选 、2多选 、3简答
+        difficulty: 1, //	题目难度 1简单 、2一般 、3困难
         single_select_answer: "", //	单选题答案
         multiple_select_answer: [], //多选题答案
         short_answer: "", //	简答题答案
