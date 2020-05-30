@@ -20,7 +20,12 @@ import '@/plugins/elementui.js'
 //导入封装的axios
 import '@/ultils/request.js'
 
+// 导入store
+import store from '@/store'
+
+
 new Vue({
   render: h => h(App),
-  router
+  router,
+  store
 }).$mount('#app')
